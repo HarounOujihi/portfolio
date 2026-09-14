@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { prisma } from "@/lib/db";
@@ -9,20 +11,25 @@ interface Params {
   params: Promise<{ slug: string }>;
 }
 
-async function getArticle(slug: string) {
-  return prisma.article.findFirst({ where: { slug, published: true } });
+async function getArticle(slug: string, allowPreview: boolean) {
+  return prisma.article.findFirst({ where: { slug, ...(allowPreview ? {} : { published: true }) } });
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticle(slug);
+  const article = await getArticle(slug, false);
   if (!article) return { title: "Article not found" };
   return { title: article.title, description: article.excerpt };
 }
 
-export default async function ArticlePage({ params }: Params) {
+export default async function ArticlePage({
+  params,
+  searchParams,
+}: Params & { searchParams: Promise<{ preview?: string }> }) {
   const { slug } = await params;
-  const article = await getArticle(slug);
+  const session = await auth.api.getSession({ headers: await headers() }).catch(() => null);
+  const allowPreview = Boolean((await searchParams).preview) && Boolean(session);
+  const article = await getArticle(slug, allowPreview);
   if (!article) notFound();
 
   return (
@@ -50,3 +57,4 @@ export default async function ArticlePage({ params }: Params) {
     </main>
   );
 }
+export const dynamic = "force-dynamic";

@@ -52,3 +52,4 @@ export default async function ExperiencePage() {
     </main>
   );
 }
+export const dynamic = "force-dynamic";

@@ -3,6 +3,7 @@ import "dotenv/config";
 import { readFileSync } from "node:fs";
 // Sources: content/copy.md, content/articles/*.md, assets/case-studies/*/notes.md (owner facts).
 // This file is the content-backup source of truth (see plans/phase-1-foundation.md).
+import { hashPassword } from "better-auth/crypto";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -676,6 +677,60 @@ async function main() {
       },
     });
   }
+
+  // ---------------- Admin credential (P4.T2 — D-P4-1) ----------------
+  // Password from ADMIN_INITIAL_PASSWORD, hashed via better-auth/crypto.
+  // Plaintext never stored; rotate the env var + delete the account row to reset.
+  const adminPassword = process.env.ADMIN_INITIAL_PASSWORD;
+  if (adminPassword) {
+    
+    const admin = await prisma.user.upsert({
+      where: { email: "haroun@mahd.group" },
+      update: { emailVerified: true },
+      create: {
+        id: "admin-user",
+        name: "Haroun Oujihi",
+        email: "haroun@mahd.group",
+        emailVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+    const cred = await prisma.account.findFirst({
+      where: { userId: admin.id, providerId: "credential" },
+    });
+    if (!cred) {
+      await prisma.account.create({
+        data: {
+          id: "admin-credential",
+          userId: admin.id,
+          accountType: "credential",
+          providerId: "credential",
+          accountId: admin.id,
+          password: await hashPassword(adminPassword),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    }
+    await prisma.adminUser.upsert({
+      where: { email: "haroun@mahd.group" },
+      update: { role: "ADMIN" },
+      create: { email: "haroun@mahd.group", name: "Haroun Oujihi", role: "ADMIN" },
+    });
+  }
+
+  // ---------------- Home "Signals" stats (owner-editable via /admin/stats) ----------------
+  const stat = (value: string, label: string, sortOrder: number) =>
+    prisma.stat.upsert({
+      where: { id: `stat-${sortOrder}` },
+      update: { value, label, sortOrder },
+      create: { id: `stat-${sortOrder}`, value, label, sortOrder },
+    });
+  await stat("10+", "years shipping software", 1);
+  await stat("6", "companies, 3 countries", 2);
+  await stat("4", "industries: ERP · fintech · gov · edtech", 3);
+  await stat("3", "languages: AR · EN · FR", 4);
 
   // Certifications: none on record — intentionally empty (honest portfolio).
   console.log(

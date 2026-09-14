@@ -23,7 +23,7 @@ its Done-check actually passes — not when the code seems finished.
 | 2 | [phase-2-public-v1.md](phase-2-public-v1.md) | Public portfolio (no AI) | **9/10 done** — axe-clean site-wide in the adopted dark editorial design; home replaced (owner decision); Lighthouse measurement pending (P2.T11) |
 | 3 | [phase-3-case-studies.md](phase-3-case-studies.md) | Case studies, articles, diagrams | ✅ **done** (metrics + final screenshots owner-blocked, tracked in P0.T2) |
 | — | [design-system](design-system.md) | **Owner decision 2026-09-14 (later same day): `/demo` direction ADOPTED site-wide** — dark-only editorial design (Space Grotesk, oversized type, bento, marquee) replaces the classic light home; multi-page structure kept; `/demo` template removed after adoption. Menu fix (active states + staggered drawer) also shipped. |
-| 4 | [phase-4-auth-admin.md](phase-4-auth-admin.md) | OAuth, admin CMS (shadcn, mobile-good) | not started |
+| 4 | [phase-4-auth-admin.md](phase-4-auth-admin.md) | Auth + admin CMS | **part 1 ✅** (login/admin shell/Signals editor/Projects admin + ordering) — part 2 remaining: articles/experience done ✓, media upload + export ✓, Playwright e2e deferred to P12 |
 | 5 | [phase-5-ai-assistant.md](phase-5-ai-assistant.md) | Chat, tools, streaming, rate limits | not started |
 | 6 | [phase-6-rag-knowledge.md](phase-6-rag-knowledge.md) | Knowledge base, hybrid retrieval, re-index | not started |
 | 7 | [phase-7-evaluation-safety.md](phase-7-evaluation-safety.md) | Eval suite, injection probes, admin view | not started |

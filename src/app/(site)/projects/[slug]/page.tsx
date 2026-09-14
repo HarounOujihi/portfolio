@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatPeriod } from "@/lib/format";
 import { MediaGallery } from "@/components/media-gallery";
@@ -18,9 +20,9 @@ const RELATED_EXPERIENCE: Record<string, string> = {
   "soldx-studio": "mahd",
 };
 
-async function getProject(slug: string) {
+async function getProject(slug: string, allowPreview: boolean) {
   return prisma.project.findFirst({
-    where: { slug, published: true },
+    where: { slug, ...(allowPreview ? {} : { published: true }) },
     include: {
       technologies: { include: { technology: true } },
       challenges: { orderBy: { sortOrder: "asc" } },
@@ -34,14 +36,19 @@ async function getProject(slug: string) {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const project = await getProject(slug, false);
   if (!project) return { title: "Project not found" };
   return { title: project.name, description: project.shortDescription };
 }
 
-export default async function ProjectDetailPage({ params }: Params) {
+export default async function ProjectDetailPage({
+  params,
+  searchParams,
+}: Params & { searchParams: Promise<{ preview?: string }> }) {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const session = await auth.api.getSession({ headers: await headers() }).catch(() => null);
+  const allowPreview = Boolean((await searchParams).preview) && Boolean(session);
+  const project = await getProject(slug, allowPreview);
   if (!project) notFound();
 
   const siblings = await prisma.project.findMany({
@@ -265,3 +272,4 @@ export default async function ProjectDetailPage({ params }: Params) {
     </main>
   );
 }
+export const dynamic = "force-dynamic";

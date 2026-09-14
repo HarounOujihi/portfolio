@@ -43,3 +43,4 @@ export default async function EngineeringPage() {
     </main>
   );
 }
+export const dynamic = "force-dynamic";

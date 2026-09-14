@@ -118,3 +118,4 @@ export default async function AboutPage() {
     </main>
   );
 }
+export const dynamic = "force-dynamic";

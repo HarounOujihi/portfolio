@@ -55,7 +55,6 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
   const bigWork = work.find((w) => w.big)!;
   const smallWork = work.filter((w) => !w.big);
   const [menuOpen, setMenuOpen] = useState(false);
-
   return (
     <main className="min-h-[100dvh] bg-neutral-950 text-neutral-100">
       {/* ambient accent */}
@@ -71,8 +70,8 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
       {/* top bar */}
       <nav aria-label="Home" className="sticky top-0 z-40 border-b border-white/5 bg-neutral-950/70 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-          <Link href="/" className="text-lg font-bold tracking-tighter">
-            HO<span className="text-[var(--brand)]">—</span>26
+          <Link href="/" className="text-base font-semibold tracking-tight">
+            Haroun Oujihi
           </Link>
           <div className="hidden items-center gap-7 text-sm text-neutral-400 md:flex">
             {SECTION_LINKS.map((s) => (
@@ -108,7 +107,7 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
               <SheetContent side="right" className="w-full overflow-y-auto px-6 pt-[env(safe-area-inset-top)] pb-6 sm:max-w-sm">
                 <SheetTitle className="sr-only">Navigation</SheetTitle>
 
-                <p className="mt-4 text-xs font-medium uppercase tracking-[0.25em] text-neutral-500">Sections</p>
+                <p className="mt-4 text-xs font-medium uppercase tracking-[0.25em] text-neutral-400">Sections</p>
                 <nav aria-label="Home sections" className="mt-2 flex flex-col">
                   {SECTION_LINKS.map((s, i) => (
                     <motion.span
@@ -129,7 +128,7 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
                   ))}
                 </nav>
 
-                <p className="mt-6 text-xs font-medium uppercase tracking-[0.25em] text-neutral-500">Explore</p>
+                <p className="mt-6 text-xs font-medium uppercase tracking-[0.25em] text-neutral-400">Explore</p>
                 <nav aria-label="Site pages" className="mt-2 flex flex-col">
                   {PAGE_LINKS.map((p, i) => (
                     <motion.span

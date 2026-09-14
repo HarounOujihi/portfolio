@@ -636,3 +636,71 @@ model ContactMessage {
 
   @@index([status, createdAt])
 }
+
+// ----------------------------------------------------------------
+// Better Auth (P4.T2 — D-P4-1 email+password, single admin).
+// Model names are lowercase per Better Auth's Prisma adapter convention.
+// AdminUser above remains the allow-list mirror + audit record.
+// ----------------------------------------------------------------
+
+model user {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      session[]
+  accounts      account[]
+}
+
+model session {
+  id         String    @id
+  expiresAt  DateTime
+  token      String    @unique
+  createdAt  DateTime
+  updatedAt  DateTime
+  ipAddress  String?
+  userAgent  String?
+  userId     String
+  user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model account {
+  id                    String    @id
+  userId                String
+  accountType           String
+  providerId            String
+  accountId             String
+  refreshToken          String?
+  accessToken           String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime
+  updatedAt  DateTime
+}
+
+// ----------------------------------------------------------------
+// Home "Signals" stats — owner-editable (P4: wrong numbers fix).
+// ----------------------------------------------------------------
+
+model Stat {
+  id        String @id @default(cuid())
+  value     String
+  label     String
+  sortOrder Int    @default(0)
+}

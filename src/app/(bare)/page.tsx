@@ -43,12 +43,11 @@ export default async function HomePage() {
     big: p.featured,
   }));
 
-  const stats = [
-    { value: "10+", label: "years shipping software" },
-    { value: "6", label: "companies, 3 countries" },
-    { value: "4", label: "industries: ERP · fintech · gov · edtech" },
-    { value: "3", label: "languages: AR · EN · FR" },
-  ];
+  // Owner-editable via /admin/stats (P4 — "Signals have wrong numbers" fix)
+  const stats = await prisma.stat.findMany({
+    orderBy: { sortOrder: "asc" },
+    select: { value: true, label: true },
+  });
 
   const pipeline = ["Document in", "OCR + extraction", "LLM structuring", "Validation", "PO match"];
 
@@ -69,3 +68,4 @@ export default async function HomePage() {
     />
   );
 }
+export const dynamic = "force-dynamic";
