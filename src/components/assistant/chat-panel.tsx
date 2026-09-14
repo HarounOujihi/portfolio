@@ -101,8 +101,7 @@ export function ChatPanel() {
           <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 text-sm leading-relaxed text-neutral-400">
             <p className="font-medium text-neutral-200">Ask me about my work.</p>
             <p className="mt-2">
-              Try: &ldquo;Which ERP systems have you built?&rdquo;, &ldquo;What AI has he shipped in
-              production?&rdquo;, &ldquo;Tell me about your React Native work.&rdquo; — every answer cites its sources.
+              Try: &ldquo;Which ERP systems have you built?&rdquo;, &ldquo;What AI have you shipped in production?&rdquo;, &ldquo;Tell me about your React Native work.&rdquo; — every answer cites its sources.
             </p>
           </div>
         )}
