@@ -91,3 +91,4 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
     </div>
   );
 }
+export const dynamic = "force-dynamic";

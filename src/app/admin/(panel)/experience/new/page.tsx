@@ -77,3 +77,4 @@ export default function NewExperiencePage() {
     </div>
   );
 }
+export const dynamic = "force-dynamic";

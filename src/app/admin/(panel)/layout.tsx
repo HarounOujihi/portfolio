@@ -10,3 +10,4 @@ export default async function AdminPanelLayout({ children }: { children: ReactNo
     <AdminShell email={session.user.email}>{children}</AdminShell>
   );
 }
+export const dynamic = "force-dynamic";
