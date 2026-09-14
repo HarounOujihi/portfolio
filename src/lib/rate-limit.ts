@@ -107,6 +107,8 @@ function buildLimiter(max: number, windowMs: number, prefix: string): RateLimite
 export const limiters = {
   /** Contact form — P2.T6 */
   contact: buildLimiter(5, 10 * 60_000, "rl:contact"),
+  /** Events endpoint — P2.T6/P11 */
+  events: buildLimiter(120, 10 * 60_000, "rl:events"),
   /** Reserved for Phase 5 (chat) — plan §8.3 values */
   chatIp: buildLimiter(60, 10 * 60_000, "rl:chat:ip"),
   chatSession: buildLimiter(20, 10 * 60_000, "rl:chat:sess"),

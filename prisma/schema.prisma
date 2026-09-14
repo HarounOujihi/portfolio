@@ -145,6 +145,7 @@ enum EvalCategory {
 }
 
 enum AnalyticsEventType {
+  PAGE_VIEW
   CV_DOWNLOAD
   PROJECT_VIEW
   ARTICLE_VIEW

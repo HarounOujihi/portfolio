@@ -7,6 +7,8 @@ import { motion } from "motion/react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DemoMarquee, DemoWorkCard } from "@/components/demo/demo-bits";
 import { Reveal } from "@/components/reveal";
+import { TrackedLink } from "@/components/tracked-link";
+import { trackEvent } from "@/lib/track";
 
 interface Profile {
   fullName: string;
@@ -161,14 +163,16 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
                   >
                     Let&apos;s talk
                   </a>
-                  <a
+                  <TrackedLink
                     href="/haroun-oujihi-cv.pdf"
                     download
-                    onClick={() => setMenuOpen(false)}
+                    eventType="CV_DOWNLOAD"
+                    entityId="cv-mobile-menu"
+                    onNavigate={() => setMenuOpen(false)}
                     className="flex h-12 items-center justify-center rounded-full border border-white/20 font-medium text-neutral-200"
                   >
                     Download CV
-                  </a>
+                  </TrackedLink>
                 </motion.div>
               </SheetContent>
             </Sheet>
@@ -222,6 +226,7 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
               </a>
               <a
                 href={`mailto:${profile.email}`}
+                onClick={() => trackEvent("CONTACT_CLICK", { entityType: "link", entityId: "hero-email" })}
                 className="flex h-12 items-center rounded-full border border-white/20 px-7 font-medium text-neutral-200 transition-colors hover:border-white/50"
               >
                 {profile.email}
@@ -405,9 +410,9 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
             <a href="https://linkedin.com/in/haroun-oujihi" target="_blank" rel="noopener noreferrer" className="hover:text-white">
               LinkedIn
             </a>
-            <a href="/haroun-oujihi-cv.pdf" download className="hover:text-white">
+            <TrackedLink href="/haroun-oujihi-cv.pdf" eventType="CV_DOWNLOAD" entityId="cv-footer" download className="hover:text-white">
               CV
-            </a>
+            </TrackedLink>
           </div>
         </div>
       </footer>

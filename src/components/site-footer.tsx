@@ -1,3 +1,5 @@
+import { TrackedLink } from "@/components/tracked-link";
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/10 dark:border-neutral-800/60">
