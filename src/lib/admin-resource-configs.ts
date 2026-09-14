@@ -34,6 +34,7 @@ export const RESOURCE_SPECS: Record<string, ResourceSpec> = {
     label: "Technologies",
     titleField: "name",
     hasOrder: true,
+    slugFrom: "name",
     fields: [
       { name: "name", label: "Name", type: "text", required: true, maxLength: 60 },
       { name: "category", label: "Category", type: "select", options: TECH_CATEGORIES, required: true, half: true },

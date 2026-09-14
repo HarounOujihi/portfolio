@@ -11,7 +11,7 @@ import { getResourceSpec } from "@/lib/admin-resource-configs";
 // shapes, and input here is admin-gated.
 interface ResourceDelegate {
   findMany(args: { orderBy?: Record<string, "asc" | "desc">[]; select?: Record<string, true> }): Promise<Array<Record<string, unknown>>>;
-  findUnique(args: { where: { id: string }; select?: Record<string, true> }): Promise<Record<string, unknown> | null>;
+  findUnique(args: { where: Record<string, string>; select?: Record<string, true> }): Promise<Record<string, unknown> | null>;
   create(args: { data: Record<string, unknown> }): Promise<unknown>;
   update(args: { where: { id: string }; data: Record<string, unknown> }): Promise<unknown>;
   delete(args: { where: { id: string } }): Promise<unknown>;
@@ -71,18 +71,27 @@ export async function saveResource(resource: string, formData: FormData): Promis
     }
   }
 
-  // Articles: unique slug from title; publishedAt set on first publish
-  if (resource === "articles") {
-    const base = slugify(String(data.title ?? "article")) || "article";
+  // Unique slug auto-generated from the spec's slugFrom field (technologies,
+  // articles) — collision-safe, excluding the record being edited
+  if (spec.slugFrom) {
+    const base = slugify(String(data[spec.slugFrom] ?? "item")) || "item";
     let slug = base;
     let n = 2;
-    while (id === "" && (await delegate.findUnique({ where: { id: slug }, select: { id: true } }))) {
+    for (;;) {
+      const clash = await delegate
+        .findUnique({ where: { slug }, select: { id: true } })
+        .catch(() => null);
+      if (!clash || String(clash.id) === id) break;
       slug = `${base}-${n}`;
       n += 1;
     }
+    data.slug = slug;
+  }
+
+  // Articles: publishedAt set on first publish
+  if (resource === "articles") {
     const existing = id ? await delegate.findUnique({ where: { id }, select: { published: true, publishedAt: true } }) : null;
     const hadDate = existing && "publishedAt" in existing ? Boolean(existing.publishedAt) : false;
-    data.slug = slug;
     if (data.published && !hadDate) data.publishedAt = new Date();
     if (!data.published) data.publishedAt = hadDate && existing && "publishedAt" in existing ? (existing.publishedAt as Date) : null;
   }
