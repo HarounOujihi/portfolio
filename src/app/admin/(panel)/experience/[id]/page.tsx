@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Edit experience", robots: { index: f
 
 const input = "h-11 w-full rounded-xl border border-white/20 bg-white/[0.04] px-3 text-sm outline-none focus:border-[var(--brand)]";
 const area = "w-full rounded-xl border border-white/20 bg-white/[0.04] p-3 text-sm outline-none focus:border-[var(--brand)]";
-const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-500";
+const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-400";
 
 export default async function EditExperiencePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -23,7 +23,7 @@ export default async function EditExperiencePage({ params }: { params: Promise<{
 
   return (
     <div>
-      <nav aria-label="Breadcrumb" className="text-sm text-neutral-500">
+      <nav aria-label="Breadcrumb" className="text-sm text-neutral-400">
         <Link href="/admin/experience" className="hover:text-white">← Experience</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-bold tracking-tight">Edit — {exp.companyName}</h1>

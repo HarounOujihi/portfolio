@@ -4,7 +4,7 @@ import type { FieldSpec, ResourceSpec } from "@/lib/admin-resource-configs";
 
 const input = "h-11 w-full rounded-xl border border-white/20 bg-white/[0.04] px-3 text-sm outline-none focus:border-[var(--brand)]";
 const area = "w-full rounded-xl border border-white/20 bg-white/[0.04] p-3 text-sm outline-none focus:border-[var(--brand)]";
-const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-500";
+const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-400";
 
 export function ResourceForm({
   resource,
@@ -88,7 +88,7 @@ export function ResourceForm({
         <button type="submit" className="h-12 rounded-full bg-white px-8 font-semibold text-neutral-950">
           Save
         </button>
-        <span className="text-xs text-neutral-500">Saved changes go live immediately.</span>
+        <span className="text-xs text-neutral-400">Saved changes go live immediately.</span>
       </div>
     </form>
   );

@@ -14,7 +14,7 @@ export default async function NewResourcePage({ params }: { params: Promise<{ re
 
   return (
     <div>
-      <nav aria-label="Breadcrumb" className="text-sm text-neutral-500">
+      <nav aria-label="Breadcrumb" className="text-sm text-neutral-400">
         <Link href={`/admin/manage/${resource}`} className="hover:text-white">← {spec.label}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-bold tracking-tight">New — {spec.label}</h1>

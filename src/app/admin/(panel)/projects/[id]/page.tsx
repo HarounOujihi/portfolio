@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ProjectForm, type ProjectFormData } from "@/components/admin/project-form";
+import { ProjectMediaEditor } from "@/components/admin/project-media-editor";
+import { saveProject } from "../actions";
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,6 +14,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
       challenges: { orderBy: { sortOrder: "asc" } },
       solutions: { orderBy: { sortOrder: "asc" } },
       outcomes: { orderBy: { sortOrder: "asc" } },
+      media: { orderBy: { createdAt: "asc" } },
     },
   });
   if (!project) notFound();
@@ -48,6 +51,19 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
         <Link href="/admin/projects" className="hover:text-white">← Projects</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-bold tracking-tight">Edit — {project.name}</h1>
+
+      <section aria-labelledby="media-h" className="mt-8 rounded-3xl border border-white/10 p-5">
+        <h2 id="media-h" className="text-sm font-semibold uppercase tracking-wide text-neutral-400">
+          Images (shown on the home card + case study)
+        </h2>
+        <div className="mt-4">
+          <ProjectMediaEditor
+            projectId={project.id}
+            media={project.media.map((m) => ({ id: m.id, url: m.url, alt: m.alt, caption: m.caption }))}
+          />
+        </div>
+      </section>
+
       <div className="mt-8">
         <ProjectForm initial={initial} techs={techs} />
       </div>

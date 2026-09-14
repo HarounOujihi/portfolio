@@ -32,7 +32,7 @@ export default async function AdminExperiencePage() {
                 {exp.jobTitle} — {exp.companyName}
                 {exp.published ? "" : <span className="ml-2 rounded-full border border-white/20 px-2 py-0.5 text-xs text-neutral-400">draft</span>}
               </p>
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-neutral-400">
                 {formatPeriod(exp.startDate, exp.endDate, exp.isCurrent)} · {exp.achievements.length} achievements
               </p>
             </div>

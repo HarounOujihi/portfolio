@@ -36,7 +36,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
     <>
       {GROUPS.map((group) => (
         <div key={group.label} className="mt-6 first:mt-0">
-          <p className="px-3 text-xs font-medium uppercase tracking-[0.25em] text-neutral-500">{group.label}</p>
+          <p className="px-3 text-xs font-medium uppercase tracking-[0.25em] text-neutral-400">{group.label}</p>
           <div className="mt-2 flex flex-col">
             {group.items.map((item) => {
               const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
@@ -64,7 +64,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 function SidebarFooter({ email }: { email: string }) {
   return (
     <div className="mt-auto space-y-3 px-3 pb-6">
-      <p className="truncate text-xs text-neutral-500">{email}</p>
+      <p className="truncate text-xs text-neutral-400">{email}</p>
       <Link
         href="/"
         target="_blank"
@@ -85,7 +85,7 @@ export function AdminShell({ email, children }: { email: string; children: React
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/10 bg-neutral-950 pt-6 md:flex">
         <p className="px-4 text-base font-bold tracking-tight">
-          Portfolio <span className="text-neutral-500">admin</span>
+          Portfolio <span className="text-neutral-400">admin</span>
         </p>
         <nav aria-label="Admin" className="mt-6 flex-1 overflow-y-auto">
           <NavLinks />
@@ -97,7 +97,7 @@ export function AdminShell({ email, children }: { email: string; children: React
       <div className="md:pl-60">
         <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-white/10 bg-neutral-950/80 px-5 pt-[env(safe-area-inset-top)] backdrop-blur md:hidden">
           <p className="text-base font-bold tracking-tight">
-            Portfolio <span className="text-neutral-500">admin</span>
+            Portfolio <span className="text-neutral-400">admin</span>
           </p>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger

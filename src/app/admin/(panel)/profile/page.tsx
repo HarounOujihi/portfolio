@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/require-admin";
 
 const input = "h-11 w-full rounded-xl border border-white/20 bg-white/[0.04] px-3 text-sm outline-none focus:border-[var(--brand)]";
 const area = "w-full rounded-xl border border-white/20 bg-white/[0.04] p-3 text-sm outline-none focus:border-[var(--brand)]";
-const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-500";
+const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-400";
 
 export default async function AdminProfilePage({
   searchParams,

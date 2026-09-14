@@ -25,7 +25,7 @@ export default async function AdminMessagesPage() {
                     {m.email}
                   </a>
                 </p>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-neutral-400">
                   {m.createdAt.toLocaleString("en")} · {m.status}
                 </p>
               </div>

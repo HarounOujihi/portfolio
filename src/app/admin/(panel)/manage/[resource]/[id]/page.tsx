@@ -28,7 +28,7 @@ export default async function EditResourcePage({ params }: { params: Promise<{ r
 
   return (
     <div>
-      <nav aria-label="Breadcrumb" className="text-sm text-neutral-500">
+      <nav aria-label="Breadcrumb" className="text-sm text-neutral-400">
         <Link href={`/admin/manage/${resource}`} className="hover:text-white">← {spec.label}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-bold tracking-tight">Edit — {String(row[spec.titleField] ?? "")}</h1>

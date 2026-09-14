@@ -181,3 +181,29 @@ export async function saveProject(_prev: SaveProjectState, formData: FormData): 
     return { error: "Save failed — check the values and try again." };
   }
 }
+
+// ---------------- Project media (images) — link or uploaded file ----------------
+
+export async function addProjectMedia(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const projectId = String(formData.get("projectId") ?? "");
+  const url = String(formData.get("url") ?? "").trim().slice(0, 500);
+  const alt = String(formData.get("alt") ?? "").trim().slice(0, 200) || "Project screenshot";
+  const caption = String(formData.get("caption") ?? "").trim().slice(0, 200) || null;
+  if (!projectId || !url) return;
+
+  const max = await prisma.mediaAsset.aggregate({ _max: { createdAt: true } });
+  void max;
+  await prisma.mediaAsset.create({
+    data: { type: "IMAGE", url, alt, caption, projectId },
+  });
+  refresh();
+}
+
+export async function deleteProjectMedia(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  await prisma.mediaAsset.delete({ where: { id } });
+  refresh();
+}

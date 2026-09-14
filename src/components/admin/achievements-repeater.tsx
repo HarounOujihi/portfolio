@@ -20,7 +20,7 @@ export function AchievementsRepeater({ initial }: { initial: AchievementRow[] })
   return (
     <section className="rounded-3xl border border-white/10 p-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">Achievements</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-400">Achievements</h2>
         <button
           type="button"
           onClick={() => setItems((v) => [...v, { title: "", description: "", metric: "" }])}

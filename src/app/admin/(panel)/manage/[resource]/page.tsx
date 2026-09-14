@@ -47,16 +47,16 @@ export default async function ResourceListPage({ params }: { params: Promise<{ r
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{title}</p>
                 {resource === "articles" && (
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-neutral-400">
                     {row.published ? "published" : "draft"}
                     {row.publishedAt ? ` · ${new Date(String(row.publishedAt)).toLocaleDateString("en")}` : ""}
                   </p>
                 )}
                 {resource === "skills" && "level" in row && (
-                  <p className="text-xs text-neutral-500">{String(row.level)}</p>
+                  <p className="text-xs text-neutral-400">{String(row.level)}</p>
                 )}
                 {resource === "technologies" && "category" in row && (
-                  <p className="text-xs text-neutral-500">{String(row.category)}</p>
+                  <p className="text-xs text-neutral-400">{String(row.category)}</p>
                 )}
               </div>
               <Link

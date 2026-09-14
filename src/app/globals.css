@@ -97,6 +97,10 @@
   html {
     @apply font-sans;
   }
+  ::placeholder {
+    color: rgb(163 163 163);
+    opacity: 1;
+  }
 }
 
 /* Organic blob — design-system §1.3 (one per page max, decorative only) */
