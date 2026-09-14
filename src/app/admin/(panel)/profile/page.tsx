@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { saveProfile } from "./actions";
+import { CvUpload } from "@/components/admin/cv-upload";
 import { requireAdmin } from "@/lib/require-admin";
 
 const input = "h-11 w-full rounded-xl border border-white/20 bg-white/[0.04] px-3 text-sm outline-none focus:border-[var(--brand)]";
@@ -68,9 +69,9 @@ export default async function AdminProfilePage({
             <label className={label} htmlFor="linkedinUrl">LinkedIn URL</label>
             <input id="linkedinUrl" name="linkedinUrl" type="url" defaultValue={profile.linkedinUrl ?? ""} className={input} />
           </div>
-          <div>
-            <label className={label} htmlFor="cvUrl">CV path</label>
-            <input id="cvUrl" name="cvUrl" defaultValue={profile.cvUrl ?? ""} className={input} />
+          <div className="sm:col-span-2">
+            <label className={label} htmlFor="cvUrl">CV (download link across the site)</label>
+            <CvUpload currentUrl={profile.cvUrl ?? "/haroun-oujihi-cv.pdf"} />
           </div>
           <div>
             <label className={label} htmlFor="avatarUrl">Avatar path</label>
