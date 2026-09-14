@@ -25,6 +25,7 @@ const GROUPS: { label: string; items: { href: string; label: string; exact?: boo
     items: [
       { href: "/admin/analytics", label: "Analytics" },
       { href: "/admin/stats", label: "Signals" },
+      { href: "/admin/job-match", label: "Job matches" },
       { href: "/admin/messages", label: "Messages" },
       { href: "/admin/export", label: "Export (JSON)" },
     ],

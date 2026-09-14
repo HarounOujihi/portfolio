@@ -555,6 +555,8 @@ model JobMatchAnalysis {
   partialMatches        Json
   gaps                  Json
   suggestedTopics       Json?
+  summary               String
+  viewCount             Int           @default(0)
   model                 String?
   createdAt             DateTime      @default(now())
 
@@ -705,3 +707,5 @@ model Stat {
   label     String
   sortOrder Int    @default(0)
 }
+
+

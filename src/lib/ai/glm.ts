@@ -48,18 +48,27 @@ export interface GlmCompletionResult {
 }
 
 /** Non-streaming Messages API call — parses text and tool_use blocks. */
+export interface GlmChatOptions {
+  toolChoice?: { type: "tool"; name: string };
+  maxTokens?: number;
+}
+
 export async function glmChat(
   system: string,
   messages: GlmMessage[],
   tools?: GlmToolDef[],
+  options?: GlmChatOptions,
 ): Promise<GlmCompletionResult> {
   const params: Record<string, unknown> = {
     model: MODEL,
-    max_tokens: 2048,
+    max_tokens: options?.maxTokens ?? 2048,
     system,
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
   };
-  if (tools && tools.length > 0) params.tools = tools;
+  if (tools && tools.length > 0) {
+    params.tools = tools;
+    if (options?.toolChoice) params.tool_choice = options.toolChoice;
+  }
 
   const response = await getClient().messages.create(params as never);
 
