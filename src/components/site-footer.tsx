@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/db";
 import { TrackedLink } from "@/components/tracked-link";
 
 /** Server footer — reads the live CV URL from the database. */

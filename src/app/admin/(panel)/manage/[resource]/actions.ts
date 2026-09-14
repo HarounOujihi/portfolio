@@ -81,7 +81,6 @@ export async function saveResource(resource: string, formData: FormData): Promis
       n += 1;
     }
     const existing = id ? await delegate.findUnique({ where: { id }, select: { published: true, publishedAt: true } }) : null;
-    const wasPublished = existing && "published" in existing ? Boolean(existing.published) : false;
     const hadDate = existing && "publishedAt" in existing ? Boolean(existing.publishedAt) : false;
     data.slug = slug;
     if (data.published && !hadDate) data.publishedAt = new Date();

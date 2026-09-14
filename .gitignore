@@ -33,3 +33,5 @@ src/generated/
 
 # local dev uploads (gitignored — runtime files)
 public/uploads
+.vercel
+.env*

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteTracker } from "@/components/site-tracker";
+import { AssistantFab } from "@/components/assistant/assistant-fab";
 
 /** Public site chrome — header/footer wrap every (site) route. */
 export default async function SiteLayout({ children }: { children: ReactNode }) {
@@ -13,6 +14,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
     <div className="flex min-h-[100dvh] flex-col">
       <SiteHeader cvUrl={cvUrl} />
       <SiteTracker />
+      <AssistantFab />
       <div className="flex-1">{children}</div>
       <SiteFooter cvUrl={cvUrl} />
     </div>

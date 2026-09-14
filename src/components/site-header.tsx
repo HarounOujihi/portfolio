@@ -23,7 +23,6 @@ function isActive(pathname: string, href: string) {
 /** Client header — active states via usePathname; CV URL comes from the DB. */
 export function SiteHeader({ cvUrl }: { cvUrl: string }) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 pt-[env(safe-area-inset-top)] backdrop-blur">
@@ -73,7 +72,7 @@ export function SiteHeader({ cvUrl }: { cvUrl: string }) {
             Download CV
           </TrackedLink>
 
-          <SiteMobileMenu cvUrl={cvUrl} pathname={pathname} onNavigate={() => setOpen(false)} />
+          <SiteMobileMenu cvUrl={cvUrl} pathname={pathname} />
         </div>
       </div>
     </header>
@@ -83,11 +82,9 @@ export function SiteHeader({ cvUrl }: { cvUrl: string }) {
 function SiteMobileMenu({
   cvUrl,
   pathname,
-  onNavigate,
 }: {
   cvUrl: string;
   pathname: string;
-  onNavigate: () => void;
 }) {
   const [open, setOpen] = useState(false);
 

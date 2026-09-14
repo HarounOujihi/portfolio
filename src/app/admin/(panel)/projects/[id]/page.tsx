@@ -3,7 +3,6 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { ProjectForm, type ProjectFormData } from "@/components/admin/project-form";
 import { ProjectMediaEditor } from "@/components/admin/project-media-editor";
-import { saveProject } from "../actions";
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

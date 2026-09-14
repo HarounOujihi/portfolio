@@ -27,8 +27,7 @@ export function ResourceForm({
       <div className="grid gap-4 sm:grid-cols-2">
         {spec.fields.map((f: FieldSpec) => {
           const value = initial[f.name];
-          const cls = `${input} ${f.half ? "" : "sm:col-span-2"}`;
-          switch (f.type) {
+                    switch (f.type) {
             case "textarea":
               return (
                 <div key={f.name} className="sm:col-span-2">
