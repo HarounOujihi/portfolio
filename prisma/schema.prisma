@@ -1,0 +1,638 @@
+// ============================================================
+// schema.prisma — Haroun Oujihi AI-Native Portfolio Platform
+// Prisma ORM 7.x + PostgreSQL 16 (pgvector extension available)
+// Source: PORTFOLIO_PROJECT_PLAN.md §7 + decisions D-P1-2..D-P1-5
+// ============================================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+// ----------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------
+
+enum AdminRole {
+  ADMIN
+  EDITOR
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+}
+
+enum ProjectStatus {
+  LIVE
+  MAINTENANCE
+  ARCHIVED
+  CONCEPT
+}
+
+enum Industry {
+  SAAS
+  ERP
+  FINTECH
+  EDTECH
+  ECOMMERCE
+  GOVERNMENT
+  AI
+  TRAVEL
+  HOSPITALITY
+  OTHER
+}
+
+enum ProjectType {
+  WEB_APP
+  MOBILE_APP
+  API_PLATFORM
+  INTERNAL_TOOL
+}
+
+enum TechCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  INFRASTRUCTURE
+  AI
+  MOBILE
+  TOOLS
+}
+
+enum TechImportance {
+  PRIMARY
+  SECONDARY
+}
+
+enum SkillCategory {
+  LANGUAGE
+  FRAMEWORK
+  DATABASE
+  INFRASTRUCTURE
+  AI_ML
+  ARCHITECTURE
+  LEADERSHIP
+  OTHER
+}
+
+enum SkillLevel {
+  FAMILIAR
+  PROFICIENT
+  ADVANCED
+  EXPERT
+}
+
+enum ArticleType {
+  ARCHITECTURE
+  AI
+  ENGINEERING
+  NEXTJS
+  DATABASE
+  LEADERSHIP
+}
+
+enum MediaType {
+  IMAGE
+  DIAGRAM
+  VIDEO
+  DOCUMENT
+}
+
+enum ExternalLinkType {
+  GITHUB
+  LIVE_DEMO
+  CASE_STUDY
+  ARTICLE
+  OTHER
+}
+
+enum SourceType {
+  PROFILE
+  EXPERIENCE
+  PROJECT
+  ARTICLE
+  SKILL
+  CUSTOM
+}
+
+enum ConversationMode {
+  GENERAL
+  RECRUITER
+  ENGINEERING
+  JOB_MATCH
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  TOOL
+  SYSTEM
+}
+
+enum EvalCategory {
+  FACTUAL
+  SOURCE_ATTRIBUTION
+  HALLUCINATION
+  PROMPT_INJECTION
+  RELEVANCE
+  JOB_FIT
+}
+
+enum AnalyticsEventType {
+  CV_DOWNLOAD
+  PROJECT_VIEW
+  ARTICLE_VIEW
+  AI_OPEN
+  AI_QUESTION
+  JOB_MATCH_RUN
+  CONTACT_CLICK
+  CONTACT_SUBMIT
+  GITHUB_CLICK
+  LINKEDIN_CLICK
+}
+
+enum ContactStatus {
+  NEW
+  READ
+  REPLIED
+  SPAM
+}
+
+// ----------------------------------------------------------------
+// Auth / Admin — OAuth + JWT sessions (no adapter tables).
+// AdminUser is an allow-list mirror + audit record only.
+// ----------------------------------------------------------------
+
+model AdminUser {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  name        String?
+  image       String?
+  role        AdminRole @default(EDITOR)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ----------------------------------------------------------------
+// Profile — singleton; app layer enforces fixed id "profile"
+// ----------------------------------------------------------------
+
+model Profile {
+  id              String   @id @default(cuid())
+  fullName        String
+  headline        String
+  shortBio        String
+  longBio         String
+  location        String?
+  availability    String?
+  yearsExperience Int?
+  email           String
+  phone           String?
+  linkedinUrl     String?
+  githubUrl       String?
+  cvUrl           String?
+  avatarUrl       String?
+  heroImageUrl    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ----------------------------------------------------------------
+// Experience
+// ----------------------------------------------------------------
+
+model Experience {
+  id             String         @id @default(cuid())
+  companyName    String
+  companySlug    String         @unique
+  jobTitle       String
+  employmentType EmploymentType @default(FULL_TIME)
+  location       String?
+  startDate      DateTime
+  endDate        DateTime?
+  isCurrent      Boolean        @default(false)
+  summary        String
+  description    String
+  sortOrder      Int            @default(0)
+  published      Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  achievements  ExperienceAchievement[]
+  externalLinks ExternalLink[]
+
+  @@index([published, sortOrder])
+}
+
+model ExperienceAchievement {
+  id           String @id @default(cuid())
+  experienceId String
+  title        String
+  description  String
+  metric       String?
+  sortOrder    Int    @default(0)
+
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@index([experienceId])
+}
+
+// ----------------------------------------------------------------
+// Projects
+// ----------------------------------------------------------------
+
+model Project {
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  shortDescription String
+  longDescription  String
+  role             String
+  clientName       String?
+  market           String?
+  industry         Industry
+  projectType      ProjectType
+  startDate        DateTime
+  endDate          DateTime?
+  isCurrent        Boolean       @default(false)
+  status           ProjectStatus @default(LIVE)
+  featured         Boolean       @default(false)
+  sortOrder        Int           @default(0)
+  published        Boolean       @default(false)
+  githubUrl        String?
+  liveUrl          String?
+  caseStudyUrl     String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  challenges    ProjectChallenge[]
+  solutions     ProjectSolution[]
+  outcomes      ProjectOutcome[]
+  technologies  ProjectTechnology[]
+  media         MediaAsset[]
+  externalLinks ExternalLink[]
+
+  @@index([published, featured, sortOrder])
+}
+
+model ProjectChallenge {
+  id          String @id @default(cuid())
+  projectId   String
+  title       String
+  description String
+  sortOrder   Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ProjectSolution {
+  id          String @id @default(cuid())
+  projectId   String
+  title       String
+  description String
+  sortOrder   Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ProjectOutcome {
+  id          String @id @default(cuid())
+  projectId   String
+  title       String
+  description String
+  metric      String?
+  sortOrder   Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+// ----------------------------------------------------------------
+// Technologies & Skills
+// ----------------------------------------------------------------
+
+model Technology {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  category    TechCategory
+  icon        String?
+  url         String?
+  description String?
+  sortOrder   Int          @default(0)
+
+  projects ProjectTechnology[]
+}
+
+model ProjectTechnology {
+  projectId    String
+  technologyId String
+  importance   TechImportance @default(PRIMARY)
+
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, technologyId])
+  @@index([technologyId])
+}
+
+model Skill {
+  id          String        @id @default(cuid())
+  name        String
+  category    SkillCategory
+  level       SkillLevel
+  years       Float?
+  description String?
+  featured    Boolean       @default(false)
+  sortOrder   Int           @default(0)
+}
+
+model Education {
+  id          String    @id @default(cuid())
+  institution String
+  degree      String
+  field       String?
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+  sortOrder   Int       @default(0)
+}
+
+model Certification {
+  id            String    @id @default(cuid())
+  name          String
+  issuer        String
+  issueDate     DateTime
+  expiryDate    DateTime?
+  credentialUrl String?
+  description   String?
+}
+
+// ----------------------------------------------------------------
+// Articles & Media
+// ----------------------------------------------------------------
+
+model Article {
+  id            String      @id @default(cuid())
+  title         String
+  slug          String      @unique
+  excerpt       String
+  content       String
+  articleType   ArticleType
+  published     Boolean     @default(false)
+  publishedAt   DateTime?
+  featured      Boolean     @default(false)
+  coverImageUrl String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  media MediaAsset[]
+
+  @@index([published, articleType])
+}
+
+model MediaAsset {
+  id        String    @id @default(cuid())
+  type      MediaType
+  url       String
+  alt       String
+  caption   String?
+  width     Int?
+  height    Int?
+  projectId String?
+  articleId String?
+  createdAt DateTime  @default(now())
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  article Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([articleId])
+}
+
+model ExternalLink {
+  id           String           @id @default(cuid())
+  label        String
+  url          String
+  type         ExternalLinkType
+  projectId    String?
+  experienceId String?
+  sortOrder    Int              @default(0)
+
+  project    Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  experience Experience? @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([experienceId])
+}
+
+// ----------------------------------------------------------------
+// AI Knowledge Base (RAG)
+// ----------------------------------------------------------------
+
+model KnowledgeDocument {
+  id          String     @id @default(cuid())
+  title       String
+  sourceType  SourceType
+  sourceId    String?
+  content     String
+  /// SHA-256 of `content`; skip re-chunk/re-embed when unchanged
+  contentHash String
+  version     Int        @default(1)
+  published   Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  chunks KnowledgeChunk[]
+
+  // D-P1-2: upsert key for re-index; app-level delete cascade from source entities
+  @@unique([sourceType, sourceId])
+  @@index([sourceType, sourceId])
+}
+
+/// `embedding` is a pgvector column added by the hand-written migration
+/// prisma/migrations/20260914111424_add_pgvector. Prisma cannot model the
+/// `vector` type; all reads/writes go through raw SQL (plan §7.1).
+model KnowledgeChunk {
+  id         String   @id @default(cuid())
+  documentId String
+  chunkIndex Int
+  content    String
+  tokenCount Int
+  /// dimension must match the embedding model output (voyage-3-large: 1024)
+  embedding  Unsupported("vector(1024)")?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}
+
+// ----------------------------------------------------------------
+// AI Conversations
+// D-P1-4: one conversation per (session, mode); purge index
+// ----------------------------------------------------------------
+
+model Conversation {
+  id            String           @id @default(cuid())
+  sessionId     String
+  mode          ConversationMode @default(GENERAL)
+  /// Salted hash of the session identifier — never the raw id (§9)
+  visitorHash   String?
+  startedAt     DateTime         @default(now())
+  lastMessageAt DateTime         @default(now())
+  metadata      Json?
+
+  messages     Message[]
+  jobMatchRuns JobMatchAnalysis[]
+
+  @@unique([sessionId, mode])
+  @@index([mode, startedAt])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String
+  model          String?
+  inputTokens    Int?
+  outputTokens   Int?
+  latencyMs      Int?
+  createdAt      DateTime    @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  toolCalls    ToolCall[]
+
+  @@index([conversationId])
+}
+
+model ToolCall {
+  id         String   @id @default(cuid())
+  messageId  String
+  toolName   String
+  arguments  Json
+  result     Json?
+  durationMs Int?
+  success    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([toolName])
+}
+
+// ----------------------------------------------------------------
+// Job-Fit Analyzer — D-P1-5: shareSlug = nanoid(12) at app level
+// ----------------------------------------------------------------
+
+model JobMatchAnalysis {
+  id                    String        @id @default(cuid())
+  conversationId        String?
+  shareSlug             String        @unique
+  jobDescriptionRaw     String
+  extractedRequirements Json
+  overallScore          Int
+  strongMatches         Json
+  partialMatches        Json
+  gaps                  Json
+  suggestedTopics       Json?
+  model                 String?
+  createdAt             DateTime      @default(now())
+
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+
+  @@index([shareSlug])
+  @@index([createdAt])
+}
+
+// ----------------------------------------------------------------
+// AI Evaluation — D-P1-3: split case (fixture) from run results
+// (run history for /admin/evaluations; replaces mixed AIEvaluation)
+// ----------------------------------------------------------------
+
+model AIEvaluationCase {
+  id               String       @id @default(cuid())
+  name             String       @unique
+  category         EvalCategory
+  input            String
+  expectedBehavior String
+  expectedSources  Json?
+  active           Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  results AIEvaluationRunResult[]
+
+  @@index([category, active])
+}
+
+model AIEvaluationRunResult {
+  id             String   @id @default(cuid())
+  runId          String
+  caseId         String
+  actualResponse String?
+  score          Float?
+  passed         Boolean?
+  model          String?
+  latencyMs      Int?
+  totalTokens    Int?
+  createdAt      DateTime @default(now())
+
+  case AIEvaluationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, caseId])
+  @@index([runId])
+  @@index([caseId, passed])
+}
+
+// ----------------------------------------------------------------
+// Analytics
+// ----------------------------------------------------------------
+
+model AnalyticsEvent {
+  id         String             @id @default(cuid())
+  sessionId  String
+  eventType  AnalyticsEventType
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime           @default(now())
+
+  @@index([eventType, createdAt])
+  @@index([sessionId])
+}
+
+// ----------------------------------------------------------------
+// Contact (option (a) per D-P0-1 — persist + admin triage)
+// ----------------------------------------------------------------
+
+model ContactMessage {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  status    ContactStatus @default(NEW)
+  ipHash    String?
+  createdAt DateTime      @default(now())
+
+  @@index([status, createdAt])
+}
