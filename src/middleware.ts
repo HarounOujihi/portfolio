@@ -24,7 +24,10 @@ export function middleware(req: NextRequest) {
   }
 
   if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
-    const hasSession = req.cookies.has("better-auth.session_token");
+    // Better Auth prefixes cookies with __Secure- on HTTPS — check both.
+    const hasSession =
+      req.cookies.has("better-auth.session_token") ||
+      req.cookies.has("__Secure-better-auth.session_token");
     if (!hasSession) {
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
