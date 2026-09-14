@@ -345,9 +345,9 @@ async function main() {
       liveUrl: "https://soldx.tn",
       externalLinks: {
         create: [
-          { label: "soldx.tn", url: "https://soldx.tn", type: "LIVE_DEMO", sortOrder: 1 },
-          { label: "studio.soldx.tn", url: "https://studio.soldx.tn", type: "LIVE_DEMO", sortOrder: 2 },
-          { label: "snap.soldx.tn", url: "https://snap.soldx.tn", type: "LIVE_DEMO", sortOrder: 3 },
+          { label: "soldx.tn", url: "https://soldx.tn", type: "LIVE_DEMO", sortOrder: 2 },
+          { label: "studio.soldx.tn", url: "https://studio.soldx.tn", type: "LIVE_DEMO", sortOrder: 3 },
+          { label: "snap.soldx.tn", url: "https://snap.soldx.tn", type: "LIVE_DEMO", sortOrder: 1 },
         ],
       },
     },
@@ -713,7 +713,7 @@ async function main() {
   // Plaintext never stored; rotate the env var + delete the account row to reset.
   const adminPassword = process.env.ADMIN_INITIAL_PASSWORD;
   if (adminPassword) {
-    
+
     const admin = await prisma.user.upsert({
       where: { email: "haroun@mahd.group" },
       update: { emailVerified: true },

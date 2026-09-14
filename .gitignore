@@ -30,3 +30,6 @@ next-env.d.ts
 
 # prisma generated client
 src/generated/
+
+# local dev uploads (gitignored — runtime files)
+public/uploads

@@ -18,7 +18,7 @@ export function Stepper({ heading, steps }: { heading: string; steps: StepperSte
 
   return (
     <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <p className="text-sm font-semibold uppercase tracking-wide text-neutral-500">{heading}</p>
+      <p className="text-sm font-semibold uppercase tracking-wide text-neutral-400">{heading}</p>
       <div role="tablist" aria-label={heading} className="mt-4 flex flex-wrap gap-2">
         {steps.map((s, i) => (
           <button
@@ -46,7 +46,7 @@ export function Stepper({ heading, steps }: { heading: string; steps: StepperSte
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
-            <h4 className="font-semibold">{current.title}</h4>
+            <p className="font-semibold">{current.title}</p>
             <p className="mt-2 text-sm leading-relaxed text-neutral-300">{current.body}</p>
           </motion.div>
         </AnimatePresence>

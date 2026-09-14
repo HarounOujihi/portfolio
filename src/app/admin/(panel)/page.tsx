@@ -45,7 +45,7 @@ export default async function AdminDashboard() {
 
       <section aria-labelledby="traffic-h" className="mt-8">
         <div className="flex items-center justify-between">
-          <h2 id="traffic-h" className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+          <h2 id="traffic-h" className="text-sm font-semibold uppercase tracking-wide text-neutral-400">
             Traffic — last 30 days
           </h2>
           <Link href="/admin/analytics" className="text-sm text-neutral-400 hover:text-white">
@@ -63,7 +63,7 @@ export default async function AdminDashboard() {
       </section>
 
       <section aria-labelledby="content-h" className="mt-12">
-        <h2 id="content-h" className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+        <h2 id="content-h" className="text-sm font-semibold uppercase tracking-wide text-neutral-400">
           Content
         </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -80,7 +80,7 @@ export default async function AdminDashboard() {
         </div>
       </section>
 
-      <p className="mt-10 text-sm text-neutral-500">
+      <p className="mt-10 text-sm text-neutral-400">
         Detailed referrers and activity: <Link href="/admin/analytics" className="underline hover:text-white">Analytics</Link>.
         Signals numbers are edited under <Link href="/admin/stats" className="underline hover:text-white">Signals</Link>.
       </p>

@@ -1,3 +1,5 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { put } from "@vercel/blob";
 import { auth } from "@/lib/auth";
 
@@ -5,18 +7,16 @@ import { auth } from "@/lib/auth";
  * Admin file upload (P4.T11, D-P4-2 = Vercel Blob).
  * kind=image (default): images for project galleries.
  * kind=document: CV PDFs — stored under cv/, replaces the public CV when saved.
+ *
+ * Storage: Vercel Blob when BLOB_READ_WRITE_TOKEN is set (required in
+ * production). Local dev fallback writes into public/uploads so the flow
+ * works end to end without an account; on Vercel the filesystem is
+ * read-only, so the fallback is disabled there by design.
  */
 export async function POST(req: Request) {
   const session = await auth.api.getSession({ headers: req.headers }).catch(() => null);
   if (!session) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return Response.json(
-      { error: "File storage not configured — connect a Blob store in Vercel (Storage tab)." },
-      { status: 501 },
-    );
   }
 
   const form = await req.formData();
@@ -37,12 +37,29 @@ export async function POST(req: Request) {
     return Response.json({ error: "Only image files are allowed." }, { status: 400 });
   }
 
-  const folder = kind === "document" ? "cv" : "projects";
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-  const blob = await put(`${folder}/${Date.now()}-${safeName}`, file, {
-    access: "public",
-    addRandomSuffix: false,
-  });
+  let url: string;
 
-  return Response.json({ url: blob.url });
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const folder = kind === "document" ? "cv" : "projects";
+    const blob = await put(`${folder}/${Date.now()}-${safeName}`, file, {
+      access: "public",
+      addRandomSuffix: false,
+    });
+    url = blob.url;
+  } else if (process.env.VERCEL) {
+    return Response.json(
+      { error: "Image storage not configured — connect a Blob store in Vercel (Storage tab)." },
+      { status: 501 },
+    );
+  } else {
+    // Local dev fallback: write into public/uploads (served statically in dev).
+    const dir = path.join(process.cwd(), "public", "uploads");
+    await mkdir(dir, { recursive: true });
+    const name = `${Date.now()}-${safeName}`;
+    await writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
+    url = `/uploads/${name}`;
+  }
+
+  return Response.json({ url });
 }
