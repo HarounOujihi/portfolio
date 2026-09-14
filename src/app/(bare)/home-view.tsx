@@ -309,7 +309,7 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
         <Reveal>
           <p className="text-sm font-medium uppercase tracking-[0.25em] text-[var(--brand)]">03 / Applied AI</p>
           <h2 id="ai-h" className="mt-3 max-w-3xl text-4xl font-bold tracking-tighter sm:text-5xl">
-            An invoice pipeline that runs in production — not a chatbot demo
+            From paper invoices to matched purchase orders — in production
           </h2>
           <p className="mt-5 max-w-2xl text-neutral-400">
             OCR and extraction before generation, schema validation as the router, multi-model cost
