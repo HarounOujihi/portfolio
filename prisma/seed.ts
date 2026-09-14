@@ -407,7 +407,7 @@ async function main() {
       shortDescription:
         "Role-based school management platform for administrators, teachers, students, and parents — attendance, timetables, exams, canteen, HR, payments.",
       longDescription:
-        "Architected and developed a role-based school management platform (johndewey-school.org) serving administrators, teachers, students, and parents, with modules for attendance, timetables, exams, canteen, HR, payments, and student management.",
+        "Architected and developed a role-based school management platform (johndewey-school.org) serving administrators, teachers, students, and parents, with modules for attendance, timetables, exams, canteen, HR, payments, and student management. Teachers run their instance end to end — timetable, grade entry (Notes), homework journal (Cahier de Liaison), courses, sanctions, and parent complaints — while parents get per-child views including canteen reservations (per day or month) with history.",
       role: "Lead developer — full product lifecycle: idea phasing, product iteration, stack decisions, team leadership + hands-on development",
       market: "Education",
       industry: "EDTECH",
@@ -432,7 +432,7 @@ async function main() {
       challenges: { title: string; description: string }[];
       solutions: { title: string; description: string }[];
       outcomes: { title: string; description: string; metric?: string }[];
-      media: { id: string; url: string; alt: string; caption: string }[];
+      media: { id: string; url: string; alt: string; caption: string; createdAt?: Date }[];
     }
   ) => {
     const proj = await prisma.project.findUnique({ where: { slug } });
@@ -651,7 +651,22 @@ async function main() {
         description: "Live at johndewey-school.org since 2026.",
       },
     ],
-    media: [],
+    media: [
+      {
+        id: "media-jds-parent-canteen",
+        url: "/screenshots/parent-canteen.png",
+        alt: "Parent canteen reservation screen — per-day and monthly booking with history",
+        caption: "Parent canteen reservations (per day or month) with history",
+        createdAt: new Date("2026-09-14T18:00:00Z"),
+      },
+      {
+        id: "media-jds-teacher-instance",
+        url: "/screenshots/teacher-instance.png",
+        alt: "Teacher home — posts timeline with instance menu sheet",
+        caption: "Teacher instance menu: timetable, Notes, Cahier de Liaison, courses, sanctions, complaints",
+        createdAt: new Date("2026-09-14T18:01:00Z"),
+      },
+    ],
   });
 
   // ---------------- Articles (P3.T5 — content from content/articles/*.md) ----------------
