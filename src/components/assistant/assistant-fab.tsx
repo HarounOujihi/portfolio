@@ -1,11 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { trackEvent } from "@/lib/track";
 
 /** Floating "Ask AI" bubble — visible on all public pages, links to /assistant. */
 export function AssistantFab() {
   const router = useRouter();
+  const pathname = usePathname();
+  if (pathname === "/assistant") return null;
 
   return (
     <button
