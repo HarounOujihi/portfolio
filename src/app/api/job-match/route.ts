@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { limiters } from "@/lib/rate-limit";
 import { analyzeJobMatch } from "@/lib/ai/job-match";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const bodySchema = z.object({
   jd: z.string().min(80).max(8000),
