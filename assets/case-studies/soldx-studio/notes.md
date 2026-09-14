@@ -1,33 +1,28 @@
-# SoldX / Studio — case study notes (P0.T2)
+import Link from "next/link";
+import { prisma } from "@/lib/db";
+import { formatPeriod } from "@/lib/format";
 
-**Status: relationship resolved (owner, 2026-09).** SoldX ecosystem **is a MAHD product**, built from
-2023 to present. The owner can discuss any SoldX feature publicly — including the OCR/invoice pipeline.
+# SoldX / Studio — case study notes (P0.T2, enriched 2026-09-14)
 
-## Facts (owner-confirmed + CV)
+**Status: relationship resolved.** SoldX ecosystem **is a MAHD product**, built from 2023 to present.
+The owner can discuss any feature publicly — including the invoice OCR pipeline and the AI assistant.
 
-- **Period:** 2023 – present (overlaps the MAHD Lead role, Aug 2023 – present).
-- **Role:** lead developer across the full product lifecycle — phasing the idea, iterating on the
-  product concept, choosing the stack, leading the team (assigning tasks while staying hands-on as a developer).
-- Ecosystem for Tunisian SMEs:
-  - `snap.soldx.tn` — e-commerce storefront + template builder, auto-provisioned shops
-  - `soldx.tn` — multi-tenant ERP
-  - `studio.soldx.tn` — mobile-first modular ERP: inventory, purchasing, sales, finance, CRM, projects
-- Core: Rust, Node.js, NestJS, Laravel, GraphQL, PostgreSQL, MongoDB, Prisma, React, TypeScript;
-  platform layer: Next.js, Prisma, PostgreSQL (MAHD architecture per CV).
-- **Headline AI story (public):** LLM-powered invoice-to-PO pipeline — OCR + structured extraction,
-  cost-optimized multi-model routing, per-tenant feature-flagged rollout; plus the natural-language
-  business query assistant; plus the connector framework (WooCommerce, PrestaShop, Magento, Shopify
-  via a generic ingestion API).
-- Case-study slug: `soldx-studio`. Assistant fixture slugs aligned (`attribution-invoice-pipeline`,
-  `attribution-connector-framework` → `soldx-studio`).
+## Owner-provided product facts (2026-09-14)
 
-## Screenshots
-
-- **Pending from owner** — placeholder/dummy images + dummy data are acceptable for development;
-  real ones must replace them before launch (gated by P3.T7 content QA and the Phase 12 pass).
+- **snap.soldx.tn** — website builder: renders merchant websites, SEO settings, template(s) management
+- **soldx.tn** — discounts discovery: all discounted products in one page, advanced search + filters,
+  ratings, **map of nearby stores with discounts**, best deals
+- **AI assistant** (see `/home/haroun/projects/sawi/studio/AI_ASSISTANT_FLOW.md` — full reference):
+  - Multilingual: French, Arabic (incl. Tunisian dialect), English — answers in the user's language
+  - Five branches: USAGE (69 help guides), DATA (16 tenant-scoped tools), MIXED, GREETING, OUT_OF_SCOPE
+  - Hybrid docs search: local ONNX embeddings (e5-small 384-d) + pgvector cosine + lexical boost → top 3
+  - Read-only · tenant-private · honest number bases (cash vs invoiced) · lexical fallback on any failure
+  - Per-establishment feature flags · AssistantLog + anonymized 90-day rollup
+  - Evals: router 22/22 · retrieval 15/15 · dispatcher 23/23
+- Screenshots: `snap.png`, `soldx.png` (seeded as media — home bento + case-study gallery)
 
 ## Still needed (owner)
 
 - [ ] 2–3 outcome metrics (tenants, invoices processed, products synced?): ____________
 - [ ] Architecture diagram source (draw.io/Excalidraw → SVG in Phase 3)
-- [ ] Real screenshots (replace dummies): ____________
+- [ ] Real ERP dashboard screenshots (optional — snap + deals already cover the gallery)

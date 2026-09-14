@@ -213,6 +213,36 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
             Step through the pipeline →
           </Link>
         </Reveal>
+
+        <Reveal delay={0.15}>
+          <div className="mt-6 rounded-3xl border border-[var(--brand)]/40 bg-[var(--color-brand-soft)] p-7 sm:p-9">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h3 className="text-2xl font-bold tracking-tight">ERP AI agent</h3>
+              <span className="rounded-full border border-white/20 px-3 py-1 text-xs text-neutral-300">New</span>
+            </div>
+            <p className="mt-3 max-w-3xl leading-relaxed text-neutral-300">
+              A multilingual assistant (French, Arabic incl. Tunisian dialect, English) woven into
+              every screen of the ERP. One routing call classifies each question into five branches —
+              how-to, data, mixed, greeting, out-of-scope — then either searches 69 help guides with
+              hybrid semantic search (local ONNX embeddings + pgvector), or runs one of 16
+              tenant-scoped data tools. Read-only by design, per-tenant rollout flags, and eval
+              suites that gate every change: router 22/22 · retrieval 15/15 · dispatcher 23/23.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {["Multilingual FR·AR·EN", "Read-only", "Hybrid semantic search", "16 data tools", "Evals gated"].map((chip) => (
+                <span key={chip} className="rounded-full border border-white/20 px-3 py-1 text-xs text-neutral-300">
+                  {chip}
+                </span>
+              ))}
+            </div>
+            <Link
+              href="/projects/soldx-studio"
+              className="mt-6 inline-flex h-11 items-center rounded-full border border-white/25 px-5 text-sm font-medium text-neutral-100 transition-colors hover:border-white/60"
+            >
+              See how it works →
+            </Link>
+          </div>
+        </Reveal>
       </section>
 
       {/* 04 — CONTACT */}

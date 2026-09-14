@@ -3,7 +3,78 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-const STEPS = [
+export interface StepperStep {
+  title: string;
+  body: string;
+}
+
+const iconBtn =
+  "flex h-11 items-center rounded-full border border-white/20 px-5 text-sm font-medium text-neutral-200 transition-colors hover:border-white/50 disabled:opacity-40";
+
+/** Interactive step-through (P3.T4). Reduced-motion safe, keyboard operable. */
+export function Stepper({ heading, steps }: { heading: string; steps: StepperStep[] }) {
+  const [step, setStep] = useState(0);
+  const current = steps[step]!;
+
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+      <p className="text-sm font-semibold uppercase tracking-wide text-neutral-500">{heading}</p>
+      <div role="tablist" aria-label={heading} className="mt-4 flex flex-wrap gap-2">
+        {steps.map((s, i) => (
+          <button
+            key={s.title}
+            role="tab"
+            aria-selected={i === step}
+            onClick={() => setStep(i)}
+            className={`h-9 rounded-full px-3 text-xs font-medium transition-colors ${
+              i === step
+                ? "bg-[var(--brand)] text-neutral-950"
+                : "border border-white/20 text-neutral-400 hover:border-white/50"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-5 min-h-28" aria-live="polite">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <h4 className="font-semibold">{current.title}</h4>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-300">{current.body}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div className="mt-4 flex gap-3">
+        <button
+          type="button"
+          onClick={() => setStep((s) => Math.max(0, s - 1))}
+          disabled={step === 0}
+          className={iconBtn}
+        >
+          ← Prev
+        </button>
+        <button
+          type="button"
+          onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
+          disabled={step === steps.length - 1}
+          className={iconBtn}
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const INVOICE_STEPS = [
   {
     title: "1 · Document in",
     body: "Invoices arrive as scans and PDFs — the pipeline starts with deterministic OCR and layout-aware extraction, not a language model. Cheap, fast, reproducible.",
@@ -26,68 +97,33 @@ const STEPS = [
   },
 ];
 
-/** Interactive step-through of the SoldX invoice pipeline (P3.T4, D-P3-1). */
-export function PipelineStepper() {
-  const [step, setStep] = useState(0);
-  const current = STEPS[step]!;
+export function InvoicePipelineStepper() {
+  return <Stepper heading="Inside the invoice pipeline" steps={INVOICE_STEPS} />;
+}
 
-  return (
-    <div className="rounded-(--radius-organic) border border-white/15 bg-white/[0.04] p-6">
-      <div
-        role="tablist"
-        aria-label="Invoice pipeline steps"
-        className="flex flex-wrap gap-2"
-      >
-        {STEPS.map((s, i) => (
-          <button
-            key={s.title}
-            role="tab"
-            aria-selected={i === step}
-            onClick={() => setStep(i)}
-            className={`h-9 rounded-full px-3 text-xs font-medium transition-colors ${
-              i === step
-                ? "bg-[var(--brand)] text-neutral-950"
-                : "border border-white/20 text-neutral-400 hover:border-neutral-600"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+const ASSISTANT_STEPS = [
+  {
+    title: "1 · Ask in your language",
+    body: "French, Arabic (including Tunisian dialect) or English. One routing call classifies the question into one of five intents and detects the language to answer in.",
+  },
+  {
+    title: "2 · USAGE — help documentation",
+    body: "How-to questions search 69 help guides via hybrid semantic search — local ONNX embeddings + pgvector cosine, boosted by lexical scoring, deduplicated to the top sections.",
+  },
+  {
+    title: "3 · DATA — your numbers",
+    body: "Numeric questions match one of 16 tenant-scoped data tools (revenue, unpaid invoices, stock valuation, client history…), each a Prisma aggregate capped at 30 rows — the LLM reads figures, it never invents them.",
+  },
+  {
+    title: "4 · Guardrails",
+    body: "Read-only by design. Opinions, tax/legal advice and competitor talk get a polite refusal. Prompt-injection attempts are ignored. Greetings get a friendly intro — never a refusal.",
+  },
+  {
+    title: "5 · Answered + measured",
+    body: "Every question is logged (tokens, latency, tools used), anonymized in a 90-day rollup, and covered by eval suites: router 22/22, retrieval 15/15, dispatcher 23/23.",
+  },
+];
 
-      <div className="mt-5 min-h-28" aria-live="polite">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-          >
-            <p className="font-semibold">{current.title}</p>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-400">{current.body}</p>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      <div className="mt-4 flex gap-3">
-        <button
-          type="button"
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
-          disabled={step === 0}
-          className="flex h-11 items-center rounded-full border border-white/20 px-5 text-sm font-medium disabled:opacity-40"
-        >
-          ← Prev
-        </button>
-        <button
-          type="button"
-          onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
-          disabled={step === STEPS.length - 1}
-          className="flex h-11 items-center rounded-full border border-white/20 px-5 text-sm font-medium disabled:opacity-40"
-        >
-          Next →
-        </button>
-      </div>
-    </div>
-  );
+export function AssistantStepper() {
+  return <Stepper heading="The assistant flow — five branches" steps={ASSISTANT_STEPS} />;
 }

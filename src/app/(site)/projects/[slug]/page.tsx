@@ -8,7 +8,7 @@ import { formatPeriod } from "@/lib/format";
 import { MediaGallery } from "@/components/media-gallery";
 import { DiagramCard } from "@/components/diagram-card";
 import { DIAGRAMS } from "@/components/diagrams";
-import { PipelineStepper } from "@/components/pipeline-stepper";
+import { InvoicePipelineStepper, AssistantStepper } from "@/components/pipeline-stepper";
 import { Reveal } from "@/components/reveal";
 
 interface Params {
@@ -144,7 +144,8 @@ export default async function ProjectDetailPage({
           </h2>
           <p className="mt-1 text-sm text-neutral-400">Step through how documents become matched records.</p>
           <div className="mt-4">
-            <PipelineStepper />
+            <InvoicePipelineStepper />
+            <div className="mt-6"><AssistantStepper /></div>
           </div>
         </section>
       )}

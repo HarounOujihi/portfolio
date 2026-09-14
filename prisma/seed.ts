@@ -515,7 +515,22 @@ async function main() {
         description: "Product catalogs sync from four major platforms through one ingestion API.",
       },
     ],
-    media: [],
+    media: [
+      {
+        id: "media-soldx-snap",
+        url: "/screenshots/snap.png",
+        alt: "snap.soldx.tn — storefront builder with template and SEO settings",
+        caption: "snap — storefront builder with template and SEO settings",
+        createdAt: new Date("2026-09-14T20:00:00Z"),
+      },
+      {
+        id: "media-soldx-deals",
+        url: "/screenshots/soldx.png",
+        alt: "SoldX discounts page — advanced search, filters, ratings, nearby stores map",
+        caption: "Discounts discovery: search, filters, ratings, nearby-store map",
+        createdAt: new Date("2026-09-14T20:01:00Z"),
+      },
+    ],
   });
 
   await seedChildren("bitmal", {
