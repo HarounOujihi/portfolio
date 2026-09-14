@@ -99,10 +99,10 @@ export function ChatPanel() {
       <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5" aria-live="polite">
         {messages.length === 0 && (
           <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 text-sm leading-relaxed text-neutral-400">
-            <p className="font-medium text-neutral-200">Ask about Haroun&apos;s work.</p>
+            <p className="font-medium text-neutral-200">Ask me about my work.</p>
             <p className="mt-2">
-              Try: &ldquo;Which ERP systems has he built?&rdquo;, &ldquo;What AI has he shipped in
-              production?&rdquo;, &ldquo;React Native experience?&rdquo; — every answer cites its sources.
+              Try: &ldquo;Which ERP systems have you built?&rdquo;, &ldquo;What AI has he shipped in
+              production?&rdquo;, &ldquo;Tell me about your React Native work.&rdquo; — every answer cites its sources.
             </p>
           </div>
         )}
@@ -149,7 +149,7 @@ export function ChatPanel() {
         <input
           name="prompt"
           className="h-11 flex-1 rounded-full border border-white/20 bg-white/[0.04] px-4 text-sm outline-none focus:border-[var(--brand)] placeholder:text-neutral-500"
-          placeholder="Ask about projects, skills, experience…"
+          placeholder="Ask me anything…"
           maxLength={4000}
           autoComplete="off"
         />
