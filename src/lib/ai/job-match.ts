@@ -136,6 +136,8 @@ interface GlmToolDefLike {
   input_schema: { type: "object"; properties: Record<string, unknown>; required?: string[] };
 }
 
+const ANALYSIS_MODEL = "glm-4.5-air"; // fast, non-thinking — structured report speed
+
 export async function analyzeJobMatch(jdText: string): Promise<JobMatchResult> {
   const corpus = await buildCandidateCorpus();
   const user = `CANDIDATE DATA:\n${corpus}\n\nJOB DESCRIPTION:\n${jdText.slice(0, 8000)}`;
