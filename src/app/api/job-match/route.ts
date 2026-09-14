@@ -34,7 +34,13 @@ export async function POST(req: Request) {
   const jd = parsed.data.jd;
   const sessionId = parsed.data.sessionId ?? "anonymous";
 
-  const analysis = await analyzeJobMatch(jd);
+  let analysis: Awaited<ReturnType<typeof analyzeJobMatch>>;
+  try {
+    analysis = await analyzeJobMatch(jd);
+  } catch (e) {
+    console.error("[job-match] analysis failed:", e instanceof Error ? e.message : e);
+    return Response.json({ error: "Analysis failed — please try again." }, { status: 500 });
+  }
 
   const shareSlug = randomBytes(9).toString("base64url").replace(/[-_]/g, "a").slice(0, 10);
 
