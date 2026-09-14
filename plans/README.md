@@ -30,7 +30,7 @@ its Done-check actually passes — not when the code seems finished.
 | 8 | [phase-8-job-fit.md](phase-8-job-fit.md) | Job-fit analyzer + shareable permalinks | not started |
 | 9 | [phase-9-observability.md](phase-9-observability.md) | Public AI health strip | not started |
 | 10 | [phase-10-content-assistant.md](phase-10-content-assistant.md) | Admin AI drafting (review-gated) | not started |
-| 11 | [phase-11-analytics.md](phase-11-analytics.md) | Events, dashboards, retention cron | not started |
+| 11 | [phase-11-analytics.md](phase-11-analytics.md) | Events, dashboards, retention cron | **core done early** — retention cron + privacy note pending |
 | 12 | [phase-12-quality-pass.md](phase-12-quality-pass.md) | Perf, mobile/a11y/SEO/security passes | not started |
 | 13 | [phase-13-optional.md](phase-13-optional.md) | Optional extensions (trigger-gated) | not started |
 
