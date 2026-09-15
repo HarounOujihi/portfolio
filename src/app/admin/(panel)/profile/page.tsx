@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { saveProfile, setAssistantEnabled } from "./actions";
 import { CvUpload } from "@/components/admin/cv-upload";
+import { AvatarUpload } from "@/components/admin/avatar-upload";
 import { requireAdmin } from "@/lib/require-admin";
 
 const input = "h-11 w-full rounded-xl border border-white/20 bg-white/[0.04] px-3 text-sm outline-none focus:border-[var(--brand)]";
@@ -73,8 +74,7 @@ export default async function AdminProfilePage({
             <CvUpload currentUrl={profile.cvUrl ?? "/haroun-oujihi-cv.pdf"} />
           </div>
           <div>
-            <label className={label} htmlFor="avatarUrl">Avatar path</label>
-            <input id="avatarUrl" name="avatarUrl" defaultValue={profile.avatarUrl ?? ""} className={input} />
+            <AvatarUpload currentUrl={profile.avatarUrl} />
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export default async function AdminProfilePage({
               </span>
             </h2>
             <p className="mt-1 max-w-lg text-sm text-neutral-400">
-              Controls the &ldquo;Ask my AI&rdquo; button on the public site, the /assistant page, and its API.
+              Controls the &ldquo;Ask me&rdquo; button on the public site, the /assistant page, and its API.
               Everything else keeps working when it&rsquo;s off.
             </p>
           </div>

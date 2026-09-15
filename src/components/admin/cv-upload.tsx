@@ -28,7 +28,20 @@ export function CvUpload({ currentUrl }: { currentUrl: string }) {
     const fd = new FormData();
     fd.set("file", file);
     fd.set("kind", "document");
-    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    // Abort after 30s — a hung storage upload must not freeze the button forever.
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 30_000);
+    let res: Response;
+    try {
+      res = await fetch("/api/admin/upload", { method: "POST", body: fd, signal: ctl.signal });
+    } catch {
+      setUploading(false);
+      setError("Upload timed out or storage is unreachable.");
+      return;
+    } finally {
+      clearTimeout(timer);
+    }
+    setUploading(false);
     setUploading(false);
     const body = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
     if (!res.ok || !body?.url) {

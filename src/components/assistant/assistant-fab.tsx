@@ -8,7 +8,7 @@ import { trackEvent } from "@/lib/track";
 const CHIP_KEY = "ai-fab-intro-dismissed";
 
 /**
- * Floating "Ask my AI" bubble — every public page except /assistant.
+ * Floating "Ask me" bubble — every public page except /assistant.
  * Deliberately attention-grabbing so visitors recognize it as an AI assistant:
  * spring entrance, pulsing halo, twinkling sparkles, and a dismissible intro chip.
  */
@@ -49,9 +49,9 @@ export function AssistantFab() {
           </button>
           <p className="flex items-center gap-1.5 font-medium">
             <span className="animate-sparkle inline-block" aria-hidden="true">✦</span>
-            I built an AI assistant that knows my work
+            My AI assistant knows my work
           </p>
-          <p className="mt-1 text-xs text-neutral-400">Ask it anything — it answers with sources.</p>
+          <p className="mt-1 text-xs text-neutral-400">Trained on my portfolio — answers with sources.</p>
           <span className="absolute -bottom-1.5 right-6 h-3 w-3 rotate-45 border-r border-b border-white/10 bg-neutral-900" aria-hidden="true" />
         </div>
       )}
@@ -63,7 +63,7 @@ export function AssistantFab() {
           dismissChip();
           router.push("/assistant");
         }}
-        aria-label="Ask my AI assistant about Haroun's work"
+        aria-label="Ask me about Haroun's work — AI assistant"
         className="animate-fab-enter group relative flex h-14 items-center gap-2 rounded-full bg-[var(--brand)] px-5 text-sm font-semibold text-neutral-950 shadow-xl shadow-black/30 transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
       >
         {/* pulsing halo — the "AI is alive" cue */}
@@ -72,7 +72,7 @@ export function AssistantFab() {
           <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z" />
           <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" />
         </svg>
-        <span className="relative">Ask my AI</span>
+        <span className="relative">Ask me</span>
       </button>
     </div>
   );
