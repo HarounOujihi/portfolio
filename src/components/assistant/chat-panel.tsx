@@ -132,7 +132,7 @@ export function ChatPanel() {
           </div>
         ))}
         {busy && (
-          <p className="text-sm text-neutral-500" role="status">
+          <p className="text-sm text-neutral-400" role="status">
             Thinking…
           </p>
         )}
@@ -147,7 +147,7 @@ export function ChatPanel() {
       <form onSubmit={onSubmit} className="flex gap-2 border-t border-white/10 p-4">
         <input
           name="prompt"
-          className="h-11 flex-1 rounded-full border border-white/20 bg-white/[0.04] px-4 text-sm outline-none focus:border-[var(--brand)] placeholder:text-neutral-500"
+          className="h-11 flex-1 rounded-full border border-white/20 bg-white/[0.04] px-4 text-sm outline-none focus:border-[var(--brand)] placeholder:text-neutral-400"
           placeholder="Ask me anything…"
           maxLength={4000}
           autoComplete="off"

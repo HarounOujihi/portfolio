@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { RecentQuestionsSection } from "@/components/admin/recent-questions";
 
 export const dynamic = "force-dynamic";
 
@@ -103,11 +104,13 @@ export default async function AdminAnalyticsPage() {
         </ul>
       </section>
 
+      <RecentQuestionsSection />
+
       <section aria-labelledby="recent-h" className="mt-12">
         <h2 id="recent-h" className="text-xl font-semibold">
           Recent activity
         </h2>
-        <div className="mt-4 overflow-x-auto rounded-3xl border border-white/10">
+        <div tabIndex={0} aria-label="Recent activity table" className="mt-4 overflow-x-auto rounded-3xl border border-white/10">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-white/10 text-xs uppercase tracking-wide text-neutral-400">
               <tr>

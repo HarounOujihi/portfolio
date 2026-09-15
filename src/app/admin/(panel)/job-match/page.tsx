@@ -23,9 +23,9 @@ export default async function AdminJobMatchPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">
-                  {jobTitle} <span className="font-normal text-neutral-500">· {r.model}</span>
+                  {jobTitle} <span className="font-normal text-neutral-400">· {r.model}</span>
                 </p>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-neutral-400">
                   {r.createdAt.toLocaleString("en")} · {r.viewCount} views ·{" "}
                   <Link href={`/job-match/${r.shareSlug}`} target="_blank" className="underline hover:text-white">
                     open report ↗
