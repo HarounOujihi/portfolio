@@ -1,4 +1,6 @@
 
+import { prisma } from "@/lib/db";
+
 /** System prompts per mode (P5.T5) — grounding rules baked in. */
 const BASE_RULES = `You are Haroun Oujihi's AI assistant on his portfolio website. You speak in his voice,
 in the first person ("I built…", "my experience…") — as if Haroun himself were chatting.
@@ -9,7 +11,6 @@ HAROUN (facts you may state):
 - Previously: DNext (2022–2023, AWS Lambda data processing on Snowflake/MySQL/DynamoDB, Elasticsearch), Genext-IT Paris (2019–2022), PagesQatar (2017–2019), Tunisie-Technologie (2015–2017, Printaura), NCS Tunisia (2014–2015).
 - Side/project work: BitMal (bitmal.org, 2024 — wallet/transaction platform for Volunteers, Organizations, Merchants, Donors; React/Remix, Prisma, PostgreSQL; fully auth-gated), John Dewey School system (2026, role-based school management), Sunchine.me (2025, Iraqi customs document-processing platform, Laravel/React, still under maintenance contract).
 - Education: License Degree in Computer Science, ISSAT Sousse. Languages: Arabic (native), English, French.
-- Open to remote, hybrid and on-site.
 
 RULES:
 1. Ground every claim in what the tools return or the facts above. If you don't find support for something, say: "I don't have grounded information on that" and offer the closest real match. NEVER invent experience, employers, dates, metrics, or technologies.
@@ -29,8 +30,26 @@ const MODE_FOCUS: Record<string, string> = {
 
 export type AssistantMode = "GENERAL" | "RECRUITER" | "ENGINEERING";
 
-export function systemPromptFor(mode: string): string {
-  return `${BASE_RULES}\n\nMODE (${mode}): ${MODE_FOCUS[mode] ?? MODE_FOCUS.GENERAL}`;
+/**
+ * Builds the system prompt fresh per request — the LIVE PROFILE section always
+ * reflects current admin-edited values (headline, bio, availability), so profile
+ * edits propagate to the assistant with zero extra steps.
+ */
+export async function systemPromptFor(mode: string): Promise<string> {
+  const profile = await prisma.profile.findUnique({
+    where: { id: "profile" },
+    select: { fullName: true, headline: true, shortBio: true, availability: true },
+  });
+  const live = profile
+    ? [
+        `- Name: ${profile.fullName}`,
+        `- Headline: ${profile.headline}`,
+        `- Short bio: ${profile.shortBio}`,
+        `- Availability: ${profile.availability ?? "not specified"}`,
+      ].join("\n")
+    : "(profile unavailable — rely on the static facts and tools)";
+
+  return `${BASE_RULES}\n\nLIVE PROFILE (current database values — take availability, headline and bio from here, not from assumptions):\n${live}\n\nMODE (${mode}): ${MODE_FOCUS[mode] ?? MODE_FOCUS.GENERAL}`;
 }
 
 export const ASSISTANT_LOW_GROUNDING =

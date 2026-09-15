@@ -77,7 +77,7 @@ export async function POST(req: Request) {
   const usage = { inputTokens: 0, outputTokens: 0 };
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
-    const completion = await glmChat(systemPromptFor(mode), chat, toolDefs);
+    const completion = await glmChat(await systemPromptFor(mode), chat, toolDefs);
     usage.inputTokens += completion.usage.inputTokens;
     usage.outputTokens += completion.usage.outputTokens;
 
