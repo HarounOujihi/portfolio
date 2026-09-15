@@ -200,6 +200,7 @@ model Profile {
   githubUrl       String?
   cvUrl           String?
   avatarUrl       String?
+  assistantEnabled Boolean @default(true)
   heroImageUrl    String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

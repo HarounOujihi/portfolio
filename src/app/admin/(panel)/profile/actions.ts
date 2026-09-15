@@ -45,3 +45,17 @@ export async function saveProfile(formData: FormData): Promise<void> {
   revalidatePath("/", "layout");
   redirect("/admin/profile?saved=1");
 }
+
+export async function setAssistantEnabled(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const enabled = String(formData.get("enabled") ?? "") === "true";
+
+  await prisma.profile.update({
+    where: { id: "profile" },
+    data: { assistantEnabled: enabled },
+  });
+
+  revalidatePath("/admin/profile");
+  revalidatePath("/", "layout");
+  redirect("/admin/profile?saved=1");
+}

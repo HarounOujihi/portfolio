@@ -20,16 +20,14 @@ const bodySchema = z.object({
 
 const MAX_ROUNDS = 3;
 
-function visitorHash(sessionId: string): string {
-  return createHash("sha256")
-    .update(`${process.env.VISITOR_HASH_SALT ?? ""}:${sessionId}`)
-    .digest("hex")
-    .slice(0, 32);
-}
-
 export async function POST(req: Request) {
   if (!isGlmConfigured()) {
     return Response.json({ error: "Assistant not configured" }, { status: 503 });
+  }
+
+  const profile = await prisma.profile.findUnique({ where: { id: "profile" }, select: { assistantEnabled: true } });
+  if (profile && !profile.assistantEnabled) {
+    return Response.json({ error: "Assistant is currently disabled" }, { status: 503 });
   }
 
   let body: unknown;

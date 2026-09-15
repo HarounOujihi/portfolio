@@ -156,6 +156,40 @@
   animation: marquee-x 26s linear infinite;
 }
 
+
+/* AI assistant FAB — pulsing halo + twinkling sparkles */
+@keyframes halo-pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  70% { transform: scale(1.45); opacity: 0; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+.animate-halo {
+  animation: halo-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes sparkle-twinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(0.82) rotate(12deg); opacity: 0.75; }
+}
+.animate-sparkle {
+  animation: sparkle-twinkle 2.2s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes fab-enter {
+  0% { transform: translateY(24px) scale(0.9); opacity: 0; }
+  60% { transform: translateY(-4px) scale(1.03); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.animate-fab-enter {
+  animation: fab-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both;
+}
+@keyframes chip-enter {
+  0% { transform: translateY(8px) scale(0.95); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.animate-chip-enter {
+  animation: chip-enter 0.35s ease-out both;
+}
+ 
 @media (prefers-reduced-motion: reduce) {
   .blob {
     animation: none;
@@ -165,6 +199,12 @@
     stroke-dashoffset: 0;
   }
   .animate-marquee-x {
+    animation: none;
+  }
+  .animate-halo,
+  .animate-sparkle,
+  .animate-fab-enter,
+  .animate-chip-enter {
     animation: none;
   }
 }
