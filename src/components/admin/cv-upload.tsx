@@ -17,13 +17,15 @@ export function CvUpload({ currentUrl }: { currentUrl: string }) {
   const [uploadedName, setUploadedName] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  async function onUpload() {
+  /** Opens the OS file picker — the button is only the trigger. */
+  function openPicker() {
     setError(null);
-    const file = fileRef.current?.files?.[0];
-    if (!file) {
-      setError("Choose a PDF file first.");
-      return;
-    }
+    fileRef.current?.click();
+  }
+
+  async function onFileChosen(file: File | undefined) {
+    setError(null);
+    if (!file) return;
     setUploading(true);
     const fd = new FormData();
     fd.set("file", file);
@@ -62,12 +64,12 @@ export function CvUpload({ currentUrl }: { currentUrl: string }) {
           type="file"
           accept="application/pdf,.pdf"
           className="hidden"
-          onChange={() => setError(null)}
+          onChange={(e) => void onFileChosen(e.target.files?.[0])}
           aria-label="Choose CV PDF file"
         />
         <button
           type="button"
-          onClick={onUpload}
+          onClick={openPicker}
           disabled={uploading}
           className="h-11 rounded-full border border-white/20 px-5 text-sm text-neutral-200 hover:border-white/50 disabled:opacity-50"
         >

@@ -16,13 +16,15 @@ export function AvatarUpload({ currentUrl }: { currentUrl: string | null }) {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  async function onUpload() {
+  /** Opens the OS file picker — the button is only the trigger. */
+  function openPicker() {
     setError(null);
-    const file = fileRef.current?.files?.[0];
-    if (!file) {
-      setError("Choose an image first.");
-      return;
-    }
+    fileRef.current?.click();
+  }
+
+  async function onFileChosen(file: File | undefined) {
+    setError(null);
+    if (!file) return;
     if (!file.type.startsWith("image/")) {
       setError("That file is not an image.");
       return;
@@ -83,12 +85,12 @@ export function AvatarUpload({ currentUrl }: { currentUrl: string | null }) {
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={() => setError(null)}
+              onChange={(e) => void onFileChosen(e.target.files?.[0])}
               aria-label="Choose avatar image"
             />
             <button
               type="button"
-              onClick={onUpload}
+              onClick={openPicker}
               disabled={uploading}
               className="h-11 rounded-full border border-white/20 px-5 text-sm text-neutral-200 hover:border-white/50 disabled:opacity-50"
             >
