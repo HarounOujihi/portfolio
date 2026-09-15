@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   },
   description:
     "SaaS & ERP architecture with applied AI/LLM integration in production. 10+ years building multi-tenant platforms end to end.",
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({

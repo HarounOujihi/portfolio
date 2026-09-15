@@ -77,11 +77,9 @@ export function HomeView({ profile, tech, work, stats, pipeline }: Props) {
           <motion.span
             {...fadeUp}
             transition={{ duration: 0.5, delay: 0.18 }}
-            aria-hidden="true"
             className="text-stroke block text-[clamp(4rem,15vw,12rem)]"
           >
             OUJIHI
-            <span className="sr-only">OUJIHI</span>
           </motion.span>
         </h1>
 
