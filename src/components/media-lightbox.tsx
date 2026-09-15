@@ -56,7 +56,7 @@ export function MediaLightbox({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="fixed inset-0 z-50 flex h-dvh w-dvw translate-x-0 translate-y-0 flex-col gap-0 rounded-none border-0 bg-neutral-950 p-0 sm:max-w-none">
+      <DialogContent className="fixed left-1/2 top-1/2 z-50 flex h-dvh w-dvw max-w-none! -translate-x-1/2 -translate-y-1/2 flex-col gap-0 overflow-hidden rounded-none border-0 bg-neutral-950 p-0">
         <DialogTitle className="sr-only">{item.alt}</DialogTitle>
 
         {/* toolbar */}
@@ -118,7 +118,7 @@ export function MediaLightbox({
         {/* caption + counter */}
         <div className="absolute inset-x-0 bottom-0 border-t border-white/10 bg-neutral-950/90 px-4 py-2.5">
           <p className="truncate text-xs text-neutral-300">{item.caption ?? item.alt}</p>
-          <p className="absolute right-4 top-2.5 text-xs text-neutral-500">
+          <p className="absolute right-4 top-2.5 text-xs text-neutral-400">
             {index + 1} / {items.length}
           </p>
         </div>
@@ -153,7 +153,7 @@ export function MediaGalleryGrid({ items, aspect = "aspect-[16/10]" }: { items: 
               loading="lazy"
               className={`${aspect} w-full object-cover transition-transform duration-500 group-hover:scale-105`}
             />
-            {item.caption && <p className="mt-2 text-xs text-neutral-500">{item.caption}</p>}
+            {item.caption && <p className="mt-2 text-xs text-neutral-400">{item.caption}</p>}
           </button>
         ))}
       </div>
