@@ -3,8 +3,13 @@ import { prisma } from "@/lib/db";
 import { HomeView } from "./home-view";
 
 export const metadata: Metadata = {
-  // Root defaults apply (title/description from src/app/layout.tsx)
-  title: "Haroun Oujihi — Lead Full Stack Engineer",
+  title: { absolute: "Haroun Oujihi — Lead Full Stack Engineer" },
+  description:
+    "Multi-tenant SaaS and ERP platforms with applied AI/LLM integration in production. 10+ years shipping end to end. Open to remote, hybrid and on-site roles.",
+  openGraph: {
+    title: { absolute: "Haroun Oujihi — Lead Full Stack Engineer" },
+    description: "SaaS/ERP platforms with applied AI in production — case studies, architecture and an AI assistant that knows the work.",
+  },
 };
 
 export default async function HomePage() {
