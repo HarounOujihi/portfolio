@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatPeriod } from "@/lib/format";
-import { MediaGallery } from "@/components/media-gallery";
+import { MediaGalleryGrid } from "@/components/media-lightbox";
 import { DiagramCard } from "@/components/diagram-card";
 import { DIAGRAMS } from "@/components/diagrams";
 import { InvoicePipelineStepper, AssistantStepper } from "@/components/pipeline-stepper";
@@ -120,7 +120,7 @@ export default async function ProjectDetailPage({
             Screenshots
           </h2>
           <div className="mt-4">
-            <MediaGallery items={project.media} />
+            <MediaGalleryGrid items={project.media.map(m => ({ url: m.url, alt: m.alt, caption: m.caption }))} />
           </div>
         </section>
       )}

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { addProjectMedia, deleteProjectMedia } from "@/app/admin/(panel)/projects/actions";
+import { MediaGalleryGrid, MediaLightbox } from "@/components/media-lightbox";
 
 export interface MediaItem {
   id: string;
@@ -10,10 +11,10 @@ export interface MediaItem {
   caption: string | null;
 }
 
-const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-400";
+const label = "mb-1 block text-xs font-medium uppercase tracking-wide text-neutral-500";
 const input = "h-11 w-full rounded-xl border border-white/20 bg-white/[0.04] px-3 text-sm outline-none focus:border-[var(--brand)]";
 
-/** Project images — supports BOTH pasted links and file uploads (Vercel Blob). */
+/** Project images — paste a link or upload a file (Vercel Blob). */
 export function ProjectMediaEditor({
   projectId,
   media,
@@ -23,6 +24,7 @@ export function ProjectMediaEditor({
 }) {
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function onAdd(e: React.FormEvent<HTMLFormElement>) {
@@ -117,6 +119,15 @@ export function ProjectMediaEditor({
           {uploading ? "Uploading…" : "Add image"}
         </button>
       </form>
+
+      {media.length > 0 && (
+        <div className="mt-6">
+          <p className="mb-2 text-xs text-neutral-500">Preview (click to enlarge + zoom):</p>
+          <MediaGalleryGrid items={media.map((m) => ({ url: m.url, alt: m.alt, caption: m.caption }))} aspect="aspect-[16/9]" />
+        </div>
+      )}
     </div>
   );
 }
+
+export { MediaGalleryGrid, MediaLightbox };
