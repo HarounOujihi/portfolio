@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -12,10 +11,13 @@ export interface LightboxItem {
 
 const ZOOM_STEPS = [1, 1.5, 2.5, 4];
 
+const ctrl =
+  "flex h-10 items-center justify-center rounded-full border border-white/25 bg-black/60 text-sm text-white hover:bg-black/80";
+
 /**
- * Full lightbox: big centered image on desktop, full-screen on mobile,
- * zoom in/out/reset buttons, scroll-to-pan when zoomed, prev/next,
- * keyboard (Esc close, arrows navigate).
+ * Full-screen lightbox (web + mobile): zoom in/out/reset with pan,
+ * prev/next, keyboard arrows, caption + counter. Deterministic layout —
+ * overrides the shadcn centering transform via CSS vars.
  */
 export function MediaLightbox({
   items,
@@ -30,8 +32,14 @@ export function MediaLightbox({
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }) {
-  const [zoom, setZoom] = useState(1);
+  // zoom tracked per image index — navigating resets it without effects
+  const [zoomByKey, setZoomByKey] = useState<Record<number, number>>({});
+  const zoom = zoomByKey[index] ?? 1;
   const item = items[index];
+
+  function setZoom(z: number) {
+    setZoomByKey({ [index]: z });
+  }
 
   // keyboard arrows for prev/next while open
   useEffect(() => {
@@ -48,86 +56,63 @@ export function MediaLightbox({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[100dvh] w-screen max-w-none rounded-none border-0 bg-neutral-950/95 p-0 sm:h-[92dvh] sm:rounded-3xl sm:border-white/10">
+      <DialogContent className="fixed inset-0 z-50 flex h-dvh w-dvw max-w-none flex-col gap-0 rounded-none border-0 bg-neutral-950 [--tw-translate-x:0] [--tw-translate-y:0]">
         <DialogTitle className="sr-only">{item.alt}</DialogTitle>
 
         {/* toolbar */}
-        <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
-          <button
-            type="button"
-            aria-label="Zoom out"
-            onClick={() => setZoom((z) => Math.max(1, +(z - 0.5).toFixed(1)))}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/50 text-lg text-white hover:bg-black/70"
-          >
-            −
-          </button>
-          <span className="w-12 text-center text-xs text-neutral-300">{Math.round(zoom * 100)}%</span>
-          <button
-            type="button"
-            aria-label="Zoom in"
-            onClick={() => setZoom((z) => Math.min(4, +(z + 0.5).toFixed(1)))}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/50 text-lg text-white hover:bg-black/70"
-          >
-            +
-          </button>
-          <button
-            type="button"
-            aria-label="Reset zoom"
-            onClick={() => setZoom(1)}
-            className="hidden h-10 items-center justify-center rounded-full border border-white/25 bg-black/50 px-3 text-xs text-white hover:bg-black/70 sm:flex"
-          >
-            Reset
-          </button>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={() => onOpenChange(false)}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/50 text-white hover:bg-black/70"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* image viewport — overflow-auto gives free pan when zoomed */}
-        <div className="flex h-full max-h-[calc(100dvh-5rem)] w-full items-center justify-center overflow-auto p-3 sm:p-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={item.url}
-            alt={item.alt}
-            style={{ width: `${zoom * 100}%`, maxWidth: zoom === 1 ? "100%" : "none" }}
-            className="h-auto object-contain transition-[width] duration-200"
-          />
-        </div>
-
-        {/* caption + counter */}
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 bg-gradient-to-t from-black/80 to-transparent px-5 pb-4 pt-10">
-          <p className="truncate text-xs text-neutral-300">{item.caption ?? item.alt}</p>
-          <p className="shrink-0 text-xs text-neutral-400">
-            {index + 1} / {items.length}
-          </p>
-        </div>
-
-        {/* prev / next */}
-        {items.length > 1 && (
-          <>
-            <button
-              type="button"
-              aria-label="Previous image"
-              onClick={() => onIndexChange((index - 1 + items.length) % items.length)}
-              className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/50 text-white hover:bg-black/70"
-            >
-              ‹
+        <div className="flex items-center justify-between gap-2 border-b border-white/10 px-4 py-3">
+          <p className="truncate text-sm text-neutral-300">{item.caption ?? item.alt}</p>
+          <div className="flex items-center gap-1.5">
+            <span className="mr-1 w-12 text-center text-xs text-neutral-400">{Math.round(zoom * 100)}%</span>
+            <button type="button" aria-label="Zoom out" onClick={() => setZoom(Math.max(1, Math.round((zoom - 0.5) * 10) / 10))} className={ctrl + " w-10"}>
+              −
             </button>
-            <button
-              type="button"
-              aria-label="Next image"
-              onClick={() => onIndexChange((index + 1) % items.length)}
-              className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/50 text-white hover:bg-black/70"
-            >
-              ›
+            <button type="button" aria-label="Zoom in" onClick={() => setZoom(Math.min(4, Math.round((zoom + 0.5) * 10) / 10))} className={ctrl + " w-10"}>
+              +
             </button>
-          </>
-        )}
+            <button type="button" aria-label="Reset zoom" onClick={() => setZoom(1)} className={ctrl + " px-3"}>
+              Reset
+            </button>
+            <button type="button" aria-label="Close" onClick={() => onOpenChange(false)} className={ctrl + " w-10"}>
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* viewport — overflow-auto gives free pan when zoomed */}
+        <div className="relative flex-1 overflow-auto">
+          <div className="flex min-h-full min-w-full items-center justify-center p-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={item.url}
+              alt={item.alt}
+              style={{ width: `${zoom * 100}%`, maxWidth: zoom === 1 ? "100%" : "none" }}
+              className="h-auto object-contain"
+            />
+          </div>
+
+          {/* prev / next */}
+          {items.length > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Previous image"
+                onClick={() => onIndexChange((index - 1 + items.length) % items.length)}
+                className="fixed left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/60 text-xl text-white hover:bg-black/80"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                aria-label="Next image"
+                onClick={() => onIndexChange((index + 1) % items.length)}
+                className="fixed right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/60 text-xl text-white hover:bg-black/80"
+              >
+                ›
+              </button>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

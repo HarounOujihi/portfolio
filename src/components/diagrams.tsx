@@ -77,20 +77,25 @@ function Frame({ title, children }: { title: string; children: ReactNode }) {
 
 export function DiagramSoldx() {
   return (
-    <Frame title="SoldX ecosystem — simplified architecture">
-      <Box x={20} y={40} w={180} h={56} label="snap.soldx.tn" sub="storefront builder" />
-      <Box x={20} y={170} w={180} h={56} label="soldx.tn" sub="multi-tenant ERP" />
-      <Box x={20} y={300} w={180} h={56} label="studio.soldx.tn" sub="mobile-first ERP" />
-      <Arrow x1={200} y1={68} x2={300} y2={190} />
-      <Arrow x1={200} y1={198} x2={300} y2={198} />
-      <Arrow x1={200} y1={328} x2={300} y2={210} />
-      <Box x={300} y={140} w={170} h={116} label="Multi-tenant core" sub="Next.js · Prisma · PostgreSQL" accent />
-      <Arrow x1={470} y1={170} x2={540} y2={110} />
-      <Arrow x1={470} y1={225} x2={540} y2={280} />
-      <Box x={540} y={60} w={160} h={72} label="Invoice pipeline" sub="OCR → extraction → PO" />
-      <Box x={540} y={266} w={160} h={72} label="Connector framework" sub="generic ingestion API" />
-      <Box x={540} y={356} w={160} h={36} label="NL query assistant" />
-      <Arrow x1={470} y1={250} x2={540} y2={368} />
+    <Frame title="SoldX ecosystem — apps, core, and the AI layer">
+      {/* product line */}
+      <Box x={20} y={40} w={190} h={56} label="snap.soldx.tn" sub="storefront builder · SEO · templates" />
+      <Box x={20} y={170} w={190} h={56} label="soldx.tn" sub="multi-tenant ERP" />
+      <Box x={20} y={300} w={190} h={56} label="studio.soldx.tn" sub="mobile-first ERP" />
+      <Arrow x1={210} y1={68} x2={300} y2={185} />
+      <Arrow x1={210} y1={198} x2={300} y2={198} />
+      <Arrow x1={210} y1={328} x2={300} y2={215} />
+      {/* multi-tenant core */}
+      <Box x={300} y={130} w={180} h={140} label="Multi-tenant core" sub="Next.js · Prisma · PostgreSQL" accent />
+      {/* AI layer */}
+      <Arrow x1={480} y1={160} x2={510} y2={76} />
+      <Arrow x1={480} y1={200} x2={510} y2={176} />
+      <Box x={510} y={40} w={190} h={72} label="AI assistant + agent" sub="multilingual · read-only" accent />
+      {/* data + ops layer */}
+      <Box x={510} y={140} w={190} h={64} label="Invoice pipeline" sub="OCR → extract → PO match" />
+      <Box x={510} y={216} w={190} h={64} label="Deals discovery" sub="discounts · map · ratings" />
+      <Box x={510} y={292} w={190} h={64} label="Connector framework" sub="4 marketplaces → 1 API" />
+      <Arrow x1={480} y1={200} x2={510} y2={324} />
     </Frame>
   );
 }
