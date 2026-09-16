@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
-import { AdrCard, EvalGauge, MetricStat, MotionStagger } from "@/components/engineering/eng-motion";
+import { MetricStat } from "@/components/motion/count-up";
+import { AdrCard, RevealList } from "@/components/engineering/eng-motion";
+import { Reveal } from "@/components/reveal";
 
 export const revalidate = 60;
 
@@ -42,16 +44,16 @@ const DECISIONS: { title: string; choice: string; because: string }[] = [
       "Analytics and assistant sessions hash (salt + sessionId) into opaque 32-hex IDs. The salt lives in server env only, so stored identifiers can't be reversed from the database.",
   },
   {
-    title: "ADR-7 · AI assistant in production (Studio ERP)",
-    choice: "Router-first intent classification over free-form chat",
-    because:
-      "The Studio ERP assistant runs one forced model call to classify every question — how-to, data, mixed, greeting, out-of-scope — then takes a purpose-built path: hybrid semantic search (local ONNX embeddings + pgvector, lexical boost, silent fallback) across 69 embedded help guides, or one of 16 tenant-scoped read-only data tools with explicit metric bases. Answers arrive in the asker's language — French, Arabic including Tunisian dialect, or English — and three separate eval suites (router, retrieval, dispatcher) gate every change.",
-  },
-  {
     title: "ADR-6 · Model routing",
     choice: "Task-sized GLM models with deterministic fallbacks",
     because:
       "The job-match analyzer runs glm-4.5-air (fast, non-thinking) for structured reports, the chat assistant uses the flagship model with tool-calling, and every structured call has a plain JSON-text fallback path — cost scales with task weight, not with hype.",
+  },
+  {
+    title: "ADR-7 · AI assistant in production (Studio ERP)",
+    choice: "Router-first intent classification over free-form chat",
+    because:
+      "The Studio ERP assistant runs one forced model call to classify every question — how-to, data, mixed, greeting, out-of-scope — then takes a purpose-built path: hybrid semantic search (local ONNX embeddings + pgvector, lexical boost, silent fallback) across 69 embedded help guides, or one of 16 tenant-scoped read-only data tools with explicit metric bases. Answers arrive in the asker's language — French, Arabic including Tunisian dialect, or English — and three separate eval suites (router, retrieval, dispatcher) gate every change.",
   },
 ];
 
@@ -81,7 +83,7 @@ export default async function EngineeringPage() {
   const metrics = [
     { value: answers, label: "assistant answers served", numeric: true },
     { value: conversations, label: "conversations", numeric: true },
-    { value: 0, suffix: "", label: `${publishedProjects} + ${articles.length} published projects + articles`, numeric: false },
+    { value: 0, label: `${publishedProjects} + ${articles.length} published projects + articles`, numeric: false },
   ];
 
   return (
@@ -99,7 +101,7 @@ export default async function EngineeringPage() {
             <MetricStat key={m.label} value={m.value as number} label={m.label} />
           ) : (
             <div key={m.label} className="rounded-(--radius-card) border border-white/15 p-4">
-              <p className="text-2xl font-bold tracking-tight">{m.label.split(" ")[0]} + {m.label.split(" ")[2]}</p>
+              <p className="text-2xl font-bold tracking-tight">{publishedProjects} + {articles.length}</p>
               <p className="mt-1 text-xs leading-snug text-neutral-400">published projects + articles</p>
             </div>
           ),
@@ -108,24 +110,23 @@ export default async function EngineeringPage() {
 
       {/* eval discipline */}
       {evalSummary && (
-        <section aria-labelledby="eval-heading" className="mt-12 rounded-(--radius-card) border border-[var(--brand)]/30 bg-[var(--brand)]/[0.06] p-6">
-          <h2 id="eval-heading" className="font-semibold tracking-tight">Eval discipline, in public</h2>
-          <p className="mt-2 text-sm text-neutral-400">
-            The assistant is graded against a fixture suite of {evalSummary.cases} grounded questions — factual accuracy,
-            source attribution, hallucination traps, prompt-injection resistance, language handling and job-fit framing.
-            Latest run:
-          </p>
-          <div className="mt-5 flex items-center gap-6">
-            <EvalGauge passed={evalSummary.passed} judged={evalSummary.judged} />
-            <p className="text-2xl font-bold tracking-tight">
+        <Reveal className="mt-12">
+          <section aria-labelledby="eval-heading" className="rounded-(--radius-card) border border-[var(--brand)]/30 bg-[var(--brand)]/[0.06] p-6">
+            <h2 id="eval-heading" className="font-semibold tracking-tight">Eval discipline, in public</h2>
+            <p className="mt-2 text-sm text-neutral-400">
+              The assistant is graded against a fixture suite of {evalSummary.cases} grounded questions — factual accuracy,
+              source attribution, hallucination traps, prompt-injection resistance, language handling and job-fit framing.
+              Latest run:
+            </p>
+            <p className="mt-4 text-3xl font-bold tracking-tight">
               {evalSummary.passed}/{evalSummary.judged}
               <span className="ml-2 text-base font-medium text-neutral-400">cases passed</span>
             </p>
-          </div>
-          <p className="mt-2 text-xs text-neutral-500">
-            Graded by a second model pass plus deterministic source checks. Every prompt change runs the suite before shipping.
-          </p>
-        </section>
+            <p className="mt-2 text-xs text-neutral-500">
+              Graded by a second model pass plus deterministic source checks. Every prompt change runs the suite before shipping.
+            </p>
+          </section>
+        </Reveal>
       )}
 
       {/* decision records */}
@@ -133,11 +134,11 @@ export default async function EngineeringPage() {
       <p className="mt-2 text-sm text-neutral-400">
         The trade-offs behind this deployment — including what I deliberately did not build yet.
       </p>
-      <MotionStagger className="mt-6 space-y-3">
+      <RevealList className="mt-6 space-y-3">
         {DECISIONS.map((d) => (
           <AdrCard key={d.title} index={d.title} choice={d.choice} because={d.because} />
         ))}
-      </MotionStagger>
+      </RevealList>
 
       {/* writing */}
       <h2 className="mt-14 text-xl font-bold tracking-tight">Writing</h2>
@@ -151,8 +152,13 @@ export default async function EngineeringPage() {
         </div>
       ) : (
         <ul className="mt-6 space-y-3">
-          {articles.map((article) => (
-            <li key={article.id} className="rounded-(--radius-card) border border-white/15 p-5 transition-colors hover:border-white/30">
+          {articles.map((article, i) => (
+            <li
+              key={article.id}
+              data-reveal
+              style={{ transitionDelay: `${Math.min(i * 60, 240)}ms` }}
+              className="rounded-(--radius-card) border border-white/15 p-5 transition-colors hover:border-white/30"
+            >
               <h3 className="font-semibold">
                 <a href={`/articles/${article.slug}`} className="hover:underline">
                   {article.title}
@@ -173,7 +179,7 @@ export default async function EngineeringPage() {
       {/* roadmap */}
       <h2 className="mt-14 text-xl font-bold tracking-tight">On the roadmap</h2>
       <ul className="mt-6 space-y-3 text-sm text-neutral-300">
-        <li className="rounded-(--radius-card) border border-white/15 p-5">
+        <li data-reveal className="rounded-(--radius-card) border border-white/15 p-5">
           <p className="font-semibold text-neutral-100">RAG over case-study depth</p>
           <p className="mt-1.5 text-neutral-400">
             The <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">KnowledgeChunk</code> table
@@ -181,12 +187,11 @@ export default async function EngineeringPage() {
             assistant quotes full architecture prose, not just structured rows.
           </p>
         </li>
-        <li className="rounded-(--radius-card) border border-white/15 p-5">
+        <li data-reveal className="rounded-(--radius-card) border border-white/15 p-5">
           <p className="font-semibold text-neutral-100">Eval-gated deploys</p>
           <p className="mt-1.5 text-neutral-400">
-            The 24-case suite already grades every change ({" "}
-            {evalSummary ? `${evalSummary.passed}/${evalSummary.judged} on the latest run` : "see above"} — run it
-            manually today). Next: run it automatically on every deploy and block assistant changes on a red run.
+            The 24-case suite already grades every change (latest run shown above — run manually today).
+            Next: run it automatically on every deploy and block assistant changes on a red run.
           </p>
         </li>
       </ul>
