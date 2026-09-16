@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import {  useRef, useState, type ReactNode } from "react";
 import { trackEvent } from "@/lib/track";
 
 const MODES = [
@@ -29,6 +29,77 @@ function currentSessionId(): string {
 }
 
 /** Chat body — session, mode, sources; custom fetch (no SDK dependency). */
+/** Minimal markdown renderer for assistant answers — bold, inline code, links, lists. React-escaped, no raw HTML. */
+function renderInline(text: string, key: string): ReactNode {
+  const nodes: ReactNode[] = [];
+  const re = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let i = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) nodes.push(text.slice(last, m.index));
+    const tok = m[0];
+    if (tok.startsWith("**")) {
+      nodes.push(<strong key={`${key}-b${i}`} className="font-semibold">{tok.slice(2, -2)}</strong>);
+    } else if (tok.startsWith("`")) {
+      nodes.push(<code key={`${key}-c${i}`} className="rounded bg-white/10 px-1 py-0.5 text-xs">{tok.slice(1, -1)}</code>);
+    } else {
+      const link = tok.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      if (link) {
+        const href = link[2];
+        nodes.push(
+          /^(https?:\/\/|\/)/.test(href) ? (
+            <a key={`${key}-a${i}`} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="underline underline-offset-2 hover:text-[var(--brand)]">
+              {link[1]}
+            </a>
+          ) : (
+            link[1]
+          ),
+        );
+      }
+    }
+    last = m.index + tok.length;
+    i++;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
+
+function renderAnswer(text: string): ReactNode {
+  const out: ReactNode[] = [];
+  let listItems: string[] = [];
+  const flushList = () => {
+    if (listItems.length === 0) return;
+    out.push(
+      <ul key={`ul-${out.length}`} className="my-1.5 list-disc space-y-1 pl-5">
+        {listItems.map((li, j) => (
+          <li key={j}>{renderInline(li, `li-${out.length}-${j}`)}</li>
+        ))}
+      </ul>,
+    );
+    listItems = [];
+  };
+  for (const line of text.split("\n")) {
+    const listItem = line.match(/^\s*(?:[-*]|\d+\.)\s+(.*)$/);
+    if (listItem) {
+      listItems.push(listItem[1]);
+      continue;
+    }
+    flushList();
+    if (line.trim() === "") {
+      out.push(<div key={`sp-${out.length}`} className="h-2" />);
+      continue;
+    }
+    out.push(
+      <p key={`p-${out.length}`} className="leading-relaxed">
+        {renderInline(line, `p-${out.length}`)}
+      </p>,
+    );
+  }
+  flushList();
+  return out;
+}
+
 export function ChatPanel() {
   const [mode, setMode] = useState<Mode>("GENERAL");
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -114,7 +185,7 @@ export function ChatPanel() {
                   : "border border-white/10 bg-white/[0.04] text-neutral-200"
               }`}
             >
-              <p className="whitespace-pre-line">{m.text}</p>
+              <div>{renderAnswer(m.text)}</div>
               {m.sources && m.sources.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {m.sources.map((src) => (
