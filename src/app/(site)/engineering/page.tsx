@@ -180,10 +180,11 @@ export default async function EngineeringPage() {
           </p>
         </li>
         <li className="rounded-(--radius-card) border border-white/15 p-5">
-          <p className="font-semibold text-neutral-100">Public eval runner</p>
+          <p className="font-semibold text-neutral-100">Eval-gated deploys</p>
           <p className="mt-1.5 text-neutral-400">
-            A fixture suite of grounded questions with expected behaviors, model-graded on change. The
-            goal: every prompt change ships with its pass rate, in the open.
+            The 24-case suite already grades every change ({" "}
+            {evalSummary ? `${evalSummary.passed}/${evalSummary.judged} on the latest run` : "see above"} — run it
+            manually today). Next: run it automatically on every deploy and block assistant changes on a red run.
           </p>
         </li>
       </ul>
