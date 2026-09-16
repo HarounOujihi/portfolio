@@ -111,7 +111,24 @@ export default async function ProjectDetailPage({
       </header>
 
       <section aria-label="Overview" className="mt-10">
-        <p className="max-w-3xl leading-relaxed text-neutral-200">{project.longDescription}</p>
+        <div className="max-w-3xl space-y-4">
+          {project.longDescription
+            .split(/\n\n/)
+            .map((block, i) =>
+              block.startsWith("```") ? (
+                <pre
+                  key={i}
+                  className="overflow-x-auto rounded-xl border border-white/15 bg-white/[0.04] p-4 text-xs leading-relaxed text-neutral-300"
+                >
+                  {block.replace(/^```\w*\n?/, "").replace(/\n?```$/, "")}
+                </pre>
+              ) : (
+                <p key={i} className="leading-relaxed text-neutral-200">
+                  {block}
+                </p>
+              ),
+            )}
+        </div>
       </section>
 
       {project.media.length > 0 && (
@@ -158,7 +175,9 @@ export default async function ProjectDetailPage({
           <div className="mt-4 space-y-3">
             {primary.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
-                <span className="w-20 text-xs font-medium uppercase tracking-wide text-neutral-400">Primary</span>
+                {secondary.length > 0 && (
+                  <span className="w-20 text-xs font-medium uppercase tracking-wide text-neutral-400">Primary</span>
+                )}
                 {primary.map((pt) => (
                   <span key={pt.technology.id} className="rounded-full bg-brand-soft px-3 py-1 text-xs font-medium">
                     {pt.technology.name}
