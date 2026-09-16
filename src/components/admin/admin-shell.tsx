@@ -13,6 +13,7 @@ const GROUPS: { label: string; items: { href: string; label: string; exact?: boo
       { href: "/admin/projects", label: "Projects" },
       { href: "/admin/experience", label: "Experience" },
       { href: "/admin/conversations", label: "Conversations" },
+      { href: "/admin/evals", label: "Evals" },
       { href: "/admin/manage/articles", label: "Articles" },
       { href: "/admin/manage/technologies", label: "Technologies" },
       { href: "/admin/manage/skills", label: "Skills" },

@@ -49,12 +49,27 @@ const DECISIONS: { title: string; choice: string; because: string }[] = [
 ];
 
 export default async function EngineeringPage() {
-  const [articles, answers, conversations, publishedProjects] = await Promise.all([
+  const [articles, answers, conversations, publishedProjects, latestEval] = await Promise.all([
     prisma.article.findMany({ where: { published: true }, orderBy: { publishedAt: "desc" } }),
     prisma.message.count({ where: { role: "ASSISTANT" } }),
     prisma.conversation.count(),
     prisma.project.count({ where: { published: true } }),
+    prisma.aIEvaluationRunResult.findFirst({ orderBy: { createdAt: "desc" }, select: { runId: true } }),
   ]);
+
+  let evalSummary: { passed: number; judged: number; cases: number } | null = null;
+  if (latestEval) {
+    const rows = await prisma.aIEvaluationRunResult.findMany({
+      where: { runId: latestEval.runId },
+      select: { passed: true },
+    });
+    const judged = rows.filter((r) => r.passed !== null);
+    evalSummary = {
+      passed: judged.filter((r) => r.passed).length,
+      judged: judged.length,
+      cases: rows.length,
+    };
+  }
 
   const metrics = [
     { value: answers, label: "assistant answers served" },
@@ -79,6 +94,27 @@ export default async function EngineeringPage() {
           </div>
         ))}
       </section>
+
+      {/* eval discipline */}
+      {evalSummary && (
+        <section aria-labelledby="eval-heading" className="mt-12 rounded-(--radius-card) border border-[var(--brand)]/30 bg-[var(--brand)]/[0.06] p-6">
+          <h2 id="eval-heading" className="font-semibold tracking-tight">Eval discipline, in public</h2>
+          <p className="mt-2 text-sm text-neutral-400">
+            The assistant is graded against a fixture suite of {evalSummary.cases} grounded questions — factual accuracy,
+            source attribution, hallucination traps, prompt-injection resistance, language handling and job-fit framing.
+            Latest run:
+          </p>
+          <p className="mt-4 text-3xl font-bold tracking-tight">
+            {evalSummary.passed}/{evalSummary.judged}
+            <span className="ml-2 text-base font-medium text-neutral-400">
+              cases passed ({evalSummary.judged ? Math.round((evalSummary.passed / evalSummary.judged) * 100) : 0}%)
+            </span>
+          </p>
+          <p className="mt-2 text-xs text-neutral-500">
+            Graded by a second model pass plus deterministic source checks. Every prompt change runs the suite before shipping.
+          </p>
+        </section>
+      )}
 
       {/* decision records */}
       <h2 className="mt-14 text-xl font-bold tracking-tight">Decision records</h2>

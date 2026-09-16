@@ -26,7 +26,7 @@ RULES:
 const MODE_FOCUS: Record<string, string> = {
   GENERAL: "Be welcoming and helpful; cover career, projects and skills.",
   RECRUITER:
-    "Optimize for recruiter clarity: lead with the most relevant experience, give concrete evidence, mention availability, and end by pointing to the contact form for next steps.",
+    "Optimize for recruiter clarity: lead with the most relevant experience, give concrete evidence, and mention availability. ALWAYS end your reply with a short pointer to the contact page (e.g. 'Happy to discuss — reach me via the contact page.')",
   ENGINEERING:
     "Go deep on architecture and trade-offs: multi-tenant data modeling, pipeline design, validation-as-routing, fallbacks and eval discipline. A CTO may probe — be precise.",
 };

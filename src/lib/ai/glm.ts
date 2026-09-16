@@ -51,6 +51,7 @@ export interface GlmCompletionResult {
 export interface GlmChatOptions {
   toolChoice?: { type: "tool"; name: string };
   maxTokens?: number;
+  temperature?: number;
 }
 
 export async function glmChat(
@@ -62,6 +63,7 @@ export async function glmChat(
   const params: Record<string, unknown> = {
     model: MODEL,
     max_tokens: options?.maxTokens ?? 2048,
+    ...(options?.temperature !== undefined ? { temperature: options.temperature } : {}),
     system,
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
   };

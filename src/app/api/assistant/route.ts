@@ -1,8 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import { glmChat, isGlmConfigured } from "@/lib/ai/glm";
-import { glmToolDefs, executeTool } from "@/lib/ai/tools";
-import { systemPromptFor, ASSISTANT_LOW_GROUNDING } from "@/lib/ai/prompts";
+import { isGlmConfigured } from "@/lib/ai/glm";
+import { runAssistant, type AssistantMode } from "@/lib/ai/assistant-core";
 import { prisma } from "@/lib/db";
 import { limiters } from "@/lib/rate-limit";
 
@@ -67,42 +66,12 @@ export async function POST(req: Request) {
     data: { conversationId: conversation.id, role: "USER", content: parsed.data.message.slice(0, 4000) },
   });
 
-  // ---- Orchestration loop: up to MAX_ROUNDS GLM calls with tool results ----
-  const chat: { role: "user" | "assistant"; content: string }[] = [
-    ...parsed.data.history ?? [],
-    { role: "user", content: parsed.data.message },
-  ];
-
-  const toolDefs = glmToolDefs();
-  const collectedSources = new Set<string>();
-  let answer = "";
-  const usage = { inputTokens: 0, outputTokens: 0 };
-
-  for (let round = 0; round < MAX_ROUNDS; round++) {
-    const completion = await glmChat(await systemPromptFor(mode), chat, toolDefs);
-    usage.inputTokens += completion.usage.inputTokens;
-    usage.outputTokens += completion.usage.outputTokens;
-
-    if (completion.toolCalls.length === 0) {
-      answer = completion.text;
-      break;
-    }
-
-    // Execute the requested tools, feed results back as a user message
-    const results = [] as { tool: string; data: unknown }[];
-    for (const call of completion.toolCalls) {
-      const out = await executeTool(call.name, call.arguments);
-      results.push({ tool: call.name, data: out ?? { error: "unknown tool" } });
-      if (out) for (const src of out.sources) collectedSources.add(src);
-    }
-    chat.push({ role: "assistant", content: `[runs tools: ${completion.toolCalls.map((c) => c.name).join(", ")}]` });
-    chat.push({ role: "user", content: `Tool results (JSON): ${JSON.stringify(results)}` });
-    answer = completion.text; // intermediate text — overwritten by later rounds
-  }
-
-  if (!answer) answer = ASSISTANT_LOW_GROUNDING;
-
-  const sources = [...collectedSources];
+  // Orchestration lives in assistant-core — the exact code path the eval suite exercises.
+  const { answer, sources, usage } = await runAssistant({
+    mode: mode as AssistantMode,
+    message: parsed.data.message,
+    history: parsed.data.history,
+  });
 
   await prisma.message
     .create({
