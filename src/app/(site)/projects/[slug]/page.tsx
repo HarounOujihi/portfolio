@@ -18,6 +18,14 @@ interface Params {
 /** Project ↔ the experience that produced it (facts, not guesses). */
 const RELATED_EXPERIENCE: Record<string, string> = {
   "soldx-studio": "mahd",
+  "applibtp": "genext-it",
+  "greenride": "genext-it",
+  "odesco": "genext-it",
+  "doyour-events": "genext-it",
+  "kalisteco": "genext-it",
+  "fabulous": "genext-it",
+  "goyoga": "genext-it",
+  "printaura": "tunisie-technologie",
 };
 
 async function getProject(slug: string, allowPreview: boolean) {

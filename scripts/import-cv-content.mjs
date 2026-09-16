@@ -108,7 +108,7 @@ const projects = [
     featured: false,
     sortOrder: 5,
     liveUrl: "https://www.youthtoprofessionals.org/",
-    tech: ["React", "Node.js", "PostgreSQL"],
+    tech: ["React", "Node.js", "PostgreSQL", "Directus"],
   },
   {
     slug: "doyour-events",
@@ -193,7 +193,7 @@ const projects = [
 ];
 
 // ensure framework technologies exist (idempotent)
-for (const [name, slug, cat] of [["Angular", "angular", "FRONTEND"], ["Vue.js", "vuejs", "FRONTEND"]]) {
+for (const [name, slug, cat] of [["Angular", "angular", "FRONTEND"], ["Vue.js", "vuejs", "FRONTEND"], ["Directus", "directus", "BACKEND"]]) {
   await client.query(
     `INSERT INTO "Technology" (id, name, slug, category) VALUES (md5(random()::text || clock_timestamp()::text), $1, $2, $3::"TechCategory") ON CONFLICT (slug) DO NOTHING`,
     [name, slug, cat],
@@ -225,6 +225,16 @@ for (const p of projects) {
   }
   console.log(`project: ${p.slug}`);
 }
+
+// ---------- Skill: headless CMS architecture via Directus ----------
+
+await client.query(
+  `INSERT INTO "Skill" (id, name, category, level, years, description, featured, "sortOrder")
+   SELECT md5(random()::text || clock_timestamp()::text), 'Headless CMS Architecture (Directus)', 'ARCHITECTURE', 'ADVANCED', 1,
+     'Content/application separation with Directus as headless CMS — modeling, roles and media, consumed by a Remix front end (Youth To Professionals).', false, 50
+   WHERE NOT EXISTS (SELECT 1 FROM "Skill" WHERE name = 'Headless CMS Architecture (Directus)')`,
+);
+console.log("skill: headless cms");
 
 // ---------- Experience: MAHD first stint ----------
 
