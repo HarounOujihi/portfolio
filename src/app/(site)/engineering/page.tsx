@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { AdrCard, EvalGauge, MetricStat, MotionStagger } from "@/components/engineering/eng-motion";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Engineering",

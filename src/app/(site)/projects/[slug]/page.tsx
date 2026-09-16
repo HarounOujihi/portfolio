@@ -300,4 +300,4 @@ export default async function ProjectDetailPage({
     </main>
   );
 }
-export const dynamic = "force-dynamic";
+export const revalidate = 60;

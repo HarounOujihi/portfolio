@@ -57,4 +57,4 @@ export default async function ArticlePage({
     </main>
   );
 }
-export const dynamic = "force-dynamic";
+export const revalidate = 60;

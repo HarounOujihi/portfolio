@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { ChatPanel } from "@/components/assistant/chat-panel";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Ask me",
   description: "Ask me about my projects, experience and skills — every answer cites its sources.",

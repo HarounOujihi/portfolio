@@ -36,4 +36,4 @@ export default async function ProjectsPage() {
     </main>
   );
 }
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
