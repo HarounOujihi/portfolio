@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && prisma generate && node scripts/assert-vector-index.mjs && node scripts/import-articles.mjs && next build",
+    "build": "prisma migrate deploy && prisma generate && node scripts/assert-vector-index.mjs && node scripts/import-articles.mjs && node scripts/import-cv-content.mjs && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

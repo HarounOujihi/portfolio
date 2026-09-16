@@ -45,6 +45,7 @@ enum Industry {
   AI
   TRAVEL
   HOSPITALITY
+  CONSTRUCTION
   OTHER
 }
 

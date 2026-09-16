@@ -102,7 +102,8 @@ async function searchExperienceExec(args: z.infer<typeof searchExperienceSchema>
       role: e.jobTitle,
       period: e.isCurrent ? "present" : "ended",
       summary: e.summary,
-      achievements: e.achievements.map((a) => a.title),
+      description: e.description,
+      achievements: e.achievements.map((a) => `${a.title}: ${a.description}`),
     })),
     sources: ["/experience"],
   };
