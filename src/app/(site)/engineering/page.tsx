@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
+import { AdrCard, EvalGauge, MetricStat, MotionStagger } from "@/components/engineering/eng-motion";
 
 export const dynamic = "force-dynamic";
 
@@ -78,9 +79,9 @@ export default async function EngineeringPage() {
   }
 
   const metrics = [
-    { value: answers, label: "assistant answers served" },
-    { value: conversations, label: "conversations" },
-    { value: `${publishedProjects} + ${articles.length}`, label: "published projects + articles" },
+    { value: answers, label: "assistant answers served", numeric: true },
+    { value: conversations, label: "conversations", numeric: true },
+    { value: 0, suffix: "", label: `${publishedProjects} + ${articles.length} published projects + articles`, numeric: false },
   ];
 
   return (
@@ -93,12 +94,16 @@ export default async function EngineeringPage() {
 
       {/* live metrics */}
       <section aria-label="Live metrics" className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {metrics.map((m) => (
-          <div key={m.label} className="rounded-(--radius-card) border border-white/15 p-4">
-            <p className="text-2xl font-bold tracking-tight">{m.value}</p>
-            <p className="mt-1 text-xs leading-snug text-neutral-400">{m.label}</p>
-          </div>
-        ))}
+        {metrics.map((m) =>
+          m.numeric ? (
+            <MetricStat key={m.label} value={m.value as number} label={m.label} />
+          ) : (
+            <div key={m.label} className="rounded-(--radius-card) border border-white/15 p-4">
+              <p className="text-2xl font-bold tracking-tight">{m.label.split(" ")[0]} + {m.label.split(" ")[2]}</p>
+              <p className="mt-1 text-xs leading-snug text-neutral-400">published projects + articles</p>
+            </div>
+          ),
+        )}
       </section>
 
       {/* eval discipline */}
@@ -110,12 +115,13 @@ export default async function EngineeringPage() {
             source attribution, hallucination traps, prompt-injection resistance, language handling and job-fit framing.
             Latest run:
           </p>
-          <p className="mt-4 text-3xl font-bold tracking-tight">
-            {evalSummary.passed}/{evalSummary.judged}
-            <span className="ml-2 text-base font-medium text-neutral-400">
-              cases passed ({evalSummary.judged ? Math.round((evalSummary.passed / evalSummary.judged) * 100) : 0}%)
-            </span>
-          </p>
+          <div className="mt-5 flex items-center gap-6">
+            <EvalGauge passed={evalSummary.passed} judged={evalSummary.judged} />
+            <p className="text-2xl font-bold tracking-tight">
+              {evalSummary.passed}/{evalSummary.judged}
+              <span className="ml-2 text-base font-medium text-neutral-400">cases passed</span>
+            </p>
+          </div>
           <p className="mt-2 text-xs text-neutral-500">
             Graded by a second model pass plus deterministic source checks. Every prompt change runs the suite before shipping.
           </p>
@@ -127,15 +133,11 @@ export default async function EngineeringPage() {
       <p className="mt-2 text-sm text-neutral-400">
         The trade-offs behind this deployment — including what I deliberately did not build yet.
       </p>
-      <ul className="mt-6 space-y-3">
+      <MotionStagger className="mt-6 space-y-3">
         {DECISIONS.map((d) => (
-          <li key={d.title} className="rounded-(--radius-card) border border-white/15 p-5">
-            <p className="text-xs font-medium uppercase tracking-wider text-[var(--brand)]">{d.title}</p>
-            <h3 className="mt-1.5 font-semibold">{d.choice}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-neutral-400">{d.because}</p>
-          </li>
+          <AdrCard key={d.title} index={d.title} choice={d.choice} because={d.because} />
         ))}
-      </ul>
+      </MotionStagger>
 
       {/* writing */}
       <h2 className="mt-14 text-xl font-bold tracking-tight">Writing</h2>

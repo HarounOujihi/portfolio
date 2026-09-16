@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { formatPeriod } from "@/lib/format";
+import { ExperienceTimeline } from "@/components/experience/experience-timeline";
 
 export const metadata: Metadata = {
   title: "Experience",
@@ -22,33 +23,18 @@ export default async function ExperiencePage() {
         Full product lifecycle ownership — architecture, backend, frontend, and delivery.
       </p>
 
-      <ol className="relative mt-12 space-y-12 border-l-2 border-white/15 pl-6 sm:pl-8">
-        {experiences.map((exp) => (
-          <li key={exp.id} className="relative">
-            <span
-              aria-hidden="true"
-              className="absolute -left-[35px] top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-[var(--brand)] sm:-left-[43px]"
-            />
-            <p className="text-sm font-medium text-neutral-400">
-              {formatPeriod(exp.startDate, exp.endDate, exp.isCurrent)}
-              {exp.location ? ` · ${exp.location}` : ""}
-            </p>
-            <h2 className="mt-1 text-xl font-semibold">{exp.jobTitle}</h2>
-            <p className="text-base font-medium text-neutral-200">{exp.companyName}</p>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-400">{exp.summary}</p>
-            {exp.achievements.length > 0 && (
-              <ul className="mt-4 space-y-3">
-                {exp.achievements.map((a) => (
-                  <li key={a.id} className="rounded-(--radius-card) bg-white/[0.04] p-4">
-                    <p className="text-sm font-semibold">{a.title}</p>
-                    <p className="mt-1 text-sm text-neutral-400">{a.description}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ol>
+      <ExperienceTimeline
+        experiences={experiences.map((exp) => ({
+          id: exp.id,
+          companySlug: exp.companySlug,
+          jobTitle: exp.jobTitle,
+          companyName: exp.companyName,
+          location: exp.location,
+          period: formatPeriod(exp.startDate, exp.endDate, exp.isCurrent),
+          summary: exp.summary,
+          achievements: exp.achievements.map((a) => ({ id: a.id, title: a.title, description: a.description })),
+        }))}
+      />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import {  useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { trackEvent } from "@/lib/track";
 
 const MODES = [
@@ -176,8 +177,16 @@ export function ChatPanel() {
             </p>
           </div>
         )}
+        <AnimatePresence initial={false}>
         {messages.map((m, i) => (
-          <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
+          <motion.div
+            key={i}
+            layout
+            initial={{ opacity: 0, y: 10, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 380, damping: 26 }}
+            className={m.role === "user" ? "flex justify-end" : "flex justify-start"}
+          >
             <div
               className={`max-w-[85%] rounded-3xl px-5 py-3.5 text-sm leading-relaxed ${
                 m.role === "user"
@@ -200,11 +209,22 @@ export function ChatPanel() {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         ))}
+        </AnimatePresence>
         {busy && (
-          <p className="text-sm text-neutral-400" role="status">
-            Thinking…
+          <p className="flex items-center gap-1.5 text-sm text-neutral-400" role="status">
+            Thinking
+            <span className="flex gap-0.5" aria-hidden="true">
+              {[0, 1, 2].map((d) => (
+                <motion.span
+                  key={d}
+                  className="inline-block h-1.5 w-1.5 rounded-full bg-neutral-400"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 0.7, repeat: Infinity, delay: d * 0.15 }}
+                />
+              ))}
+            </span>
           </p>
         )}
         {error && (
