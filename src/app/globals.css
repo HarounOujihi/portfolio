@@ -189,6 +189,19 @@
 .animate-chip-enter {
   animation: chip-enter 0.35s ease-out both;
 }
+@keyframes shine-sweep {
+  0%, 82% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  88% { opacity: 0.85; }
+  100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+}
+.animate-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: shine-sweep 6s ease-in-out infinite;
+}
  
 @media (prefers-reduced-motion: reduce) {
   .blob {
@@ -204,7 +217,8 @@
   .animate-halo,
   .animate-sparkle,
   .animate-fab-enter,
-  .animate-chip-enter {
+  .animate-chip-enter,
+  .animate-shine::after {
     animation: none;
   }
 }
