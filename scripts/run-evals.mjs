@@ -4,16 +4,17 @@
 //   node scripts/run-evals.mjs <base-url>   e.g. http://localhost:3100 or https://harounoujihi.vercel.app
 // Requires CRON_SECRET in .env (or CRON_SECRET env var).
 import "dotenv/config";
+import crypto from "node:crypto";
 import process from "node:process";
 
 const base = process.argv[2] ?? "http://localhost:3100";
-const secret = process.env.CRON_SECRET;
+const secret = process.argv[3] ?? process.env.CRON_SECRET;
 if (!secret) {
   console.error("CRON_SECRET missing");
   process.exit(1);
 }
 
-let runId = null;
+const runId = process.argv[3] ?? crypto.randomUUID();
 let remaining = Infinity;
 let totalRan = 0;
 const failures = [];
@@ -23,14 +24,13 @@ while (remaining > 0) {
   const res = await fetch(`${base}/api/evals/run`, {
     method: "POST",
     headers: { authorization: `Bearer ${secret}`, "content-type": "application/json" },
-    body: JSON.stringify(runId ? { runId } : {}),
+    body: JSON.stringify({ runId, batchSize: 2 }),
   });
   if (!res.ok) {
     console.error(`batch failed: HTTP ${res.status}`, (await res.text()).slice(0, 200));
     process.exit(1);
   }
   const data = await res.json();
-  runId ??= data.runId;
   remaining = data.remaining;
   totalRan += data.ranNow;
   for (const r of data.results) {

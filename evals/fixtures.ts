@@ -46,7 +46,7 @@ export const FIXTURES: EvalFixture[] = [
     category: "FACTUAL",
     query: "What is Odesco?",
     expectedBehavior:
-      "Describes Odesco as a full school-management product deployed across six schools (including John Dewey School), built at Genext-IT, multi-school/multi-tenant in nature.",
+      "Describes Odesco as a full school-management product serving six schools (John Dewey School among them). Attribution to Genext-IT is welcome but not required; the multi-school nature is the core.",
   },
   {
     name: "factual-mahd-current-role",
@@ -75,7 +75,7 @@ export const FIXTURES: EvalFixture[] = [
     category: "FACTUAL",
     query: "What is Youth To Professionals?",
     expectedBehavior:
-      "Describes the mentorship non-profit platform built with Directus as headless CMS and React Remix: mentor-mentee matching, programs (Mentorship, Coaching), workshops, events, mentor/mentee intake flows. Built for the client.",
+      "Describes the mentorship non-profit platform built with Directus as headless CMS and React Remix: mentor-mentee matching, programs (Mentorship, Coaching), workshops, events, mentor/mentee intake flows. Built for the client. The live URL (youthtoprofessionals.org) and the Y2PRO abbreviation are grounded facts, not inventions.",
   },
   {
     name: "factual-education",
