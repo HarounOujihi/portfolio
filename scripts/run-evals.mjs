@@ -14,7 +14,7 @@ if (!secret) {
   process.exit(1);
 }
 
-const runId = process.argv[3] ?? crypto.randomUUID();
+const runId = process.argv[4] ?? crypto.randomUUID();
 let remaining = Infinity;
 let totalRan = 0;
 const failures = [];

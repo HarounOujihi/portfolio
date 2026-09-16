@@ -41,6 +41,12 @@ const DECISIONS: { title: string; choice: string; because: string }[] = [
       "Analytics and assistant sessions hash (salt + sessionId) into opaque 32-hex IDs. The salt lives in server env only, so stored identifiers can't be reversed from the database.",
   },
   {
+    title: "ADR-7 · AI assistant in production (Studio ERP)",
+    choice: "Router-first intent classification over free-form chat",
+    because:
+      "The Studio ERP assistant runs one forced model call to classify every question — how-to, data, mixed, greeting, out-of-scope — then takes a purpose-built path: hybrid semantic search (local ONNX embeddings + pgvector, lexical boost, silent fallback) across 69 embedded help guides, or one of 16 tenant-scoped read-only data tools with explicit metric bases. Answers arrive in the asker's language — French, Arabic including Tunisian dialect, or English — and three separate eval suites (router, retrieval, dispatcher) gate every change.",
+  },
+  {
     title: "ADR-6 · Model routing",
     choice: "Task-sized GLM models with deterministic fallbacks",
     because:
