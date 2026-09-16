@@ -25,7 +25,23 @@ same model. The pipeline routes: cheap fast models handle the common case; stron
 hard ones. Routing is data-driven per attempt — if the first pass fails validation against the
 expected schema, the document escalates. That is the whole trick: **validation is the router.**
 Structured output with a strict schema makes failure detectable, and detectable failure is what makes
-escalation safe.
+escalation safe:
+
+```ts
+// validation is the router — one loop, no model guessing
+for (const model of route) {                    // [fast, stronger]
+  const result = await extract(model, doc);
+  const parsed = schema.safeParse(result);
+  if (parsed.success) return parsed.data;       // good enough — stop paying
+  // structurally failed: escalate to the next model, keep the attempt log
+}
+return humanReview(doc, attempts);              // both failed — it leaves the happy path
+```
+
+The cost math follows directly. If 90% of documents clear on the cheap model and the strong
+model costs 10× more, blended cost is 1.9× the cheap model — not 10×. You only pay the premium
+for the documents that genuinely are harder, and you can prove it per document: the attempt log
+is the audit trail.
 
 ## Per-tenant feature flags
 

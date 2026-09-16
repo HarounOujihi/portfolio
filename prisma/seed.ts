@@ -691,7 +691,7 @@ async function main() {
     if (!m) throw new Error(`bad frontmatter in ${slug}`);
     return { title: m[1]!, excerpt: m[2]!, type: m[3] as "ARCHITECTURE" | "AI", content: m[4]!.trim() };
   };
-  for (const slug of ["multi-tenant-erp-data-modeling", "multi-model-llm-routing"]) {
+  for (const slug of ["multi-tenant-erp-data-modeling", "multi-model-llm-routing", "prisma-pgvector-hnsw-guard"]) {
     const a = readArticle(slug);
     await prisma.article.upsert({
       where: { slug },

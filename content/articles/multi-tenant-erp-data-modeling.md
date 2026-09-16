@@ -19,7 +19,23 @@ layer, not by memory.
 
 The rule that made it work: no feature code talks to Prisma directly. Domain modules own their tables
 and accept a tenant scope. If a query cannot state which tenant it serves, it does not compile into
-the product.
+the product:
+
+```ts
+// domain modules accept a scope; feature code cannot construct one from thin air
+export function findPurchaseOrders(scope: TenantScope, filters: PoFilters) {
+  return db.purchaseOrder.findMany({ where: { tenantId: scope.tenantId, ...filters } });
+}
+
+// feature code:
+const pos = findPurchaseOrders(tenantScope(session), { status: "OPEN" });  // ✅ scoped by type
+// there is no code path that queries purchase orders WITHOUT a scope — the module
+// never exports one. Enforcement by export surface, not by convention.
+```
+
+The same discipline extends to background jobs: every queue message carries the tenant id, and
+workers resolve the scope from the message — never from ambient state. A cron job that forgets
+its tenant fails loudly at the type instead of silently reading another tenant's data.
 
 ## Five domains, one transaction boundary
 

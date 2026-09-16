@@ -9,13 +9,6 @@ export const metadata: Metadata = {
     "How this portfolio is built — live measurements, architecture decision records, and honest trade-offs from a working AI-native site.",
 };
 
-function median(values: number[]): number | null {
-  if (values.length === 0) return null;
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
-}
-
 const DECISIONS: { title: string; choice: string; because: string }[] = [
   {
     title: "ADR-1 · Assistant grounding",
@@ -56,24 +49,15 @@ const DECISIONS: { title: string; choice: string; because: string }[] = [
 ];
 
 export default async function EngineeringPage() {
-  const [articles, answers, conversations, publishedProjects, latencies] = await Promise.all([
+  const [articles, answers, conversations, publishedProjects] = await Promise.all([
     prisma.article.findMany({ where: { published: true }, orderBy: { publishedAt: "desc" } }),
     prisma.message.count({ where: { role: "ASSISTANT" } }),
     prisma.conversation.count(),
     prisma.project.count({ where: { published: true } }),
-    prisma.message.findMany({
-      where: { role: "ASSISTANT", latencyMs: { not: null } },
-      select: { latencyMs: true },
-      orderBy: { createdAt: "desc" },
-      take: 500,
-    }),
   ]);
-
-  const p50 = median(latencies.map((m) => m.latencyMs as number));
 
   const metrics = [
     { value: answers, label: "assistant answers served" },
-    { value: p50 === null ? "—" : `${p50}ms`, label: "median answer latency (last 500)" },
     { value: conversations, label: "conversations" },
     { value: `${publishedProjects} + ${articles.length}`, label: "published projects + articles" },
   ];
@@ -87,7 +71,7 @@ export default async function EngineeringPage() {
       </p>
 
       {/* live metrics */}
-      <section aria-label="Live metrics" className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <section aria-label="Live metrics" className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {metrics.map((m) => (
           <div key={m.label} className="rounded-(--radius-card) border border-white/15 p-4">
             <p className="text-2xl font-bold tracking-tight">{m.value}</p>
