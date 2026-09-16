@@ -26,7 +26,7 @@ const projects = [
     isCurrent: false,
     status: "ARCHIVED",
     featured: false,
-    sortOrder: 5,
+    sortOrder: 6,
     tech: ["Node.js", "MongoDB", "React", "React Native"],
   },
   {
@@ -46,7 +46,7 @@ const projects = [
     isCurrent: false,
     status: "ARCHIVED",
     featured: false,
-    sortOrder: 6,
+    sortOrder: 7,
     tech: ["PHP", "MySQL", "Node.js"],
   },
   {
@@ -66,7 +66,7 @@ const projects = [
     isCurrent: false,
     status: "ARCHIVED",
     featured: false,
-    sortOrder: 7,
+    sortOrder: 8,
     tech: ["Node.js", "MongoDB", "React", "React Native"],
   },
   {
@@ -86,10 +86,119 @@ const projects = [
     isCurrent: false,
     status: "ARCHIVED",
     featured: false,
-    sortOrder: 8,
+    sortOrder: 9,
     tech: ["Node.js", "MongoDB", "React", "React Native", "Ionic"],
   },
+  {
+    slug: "youth-to-professionals",
+    name: "Youth To Professionals (Y2PRO)",
+    shortDescription:
+      "Mentorship non-profit platform: rigorous mentor–mentee matching, programs (Mentorship, Coaching), workshops and events — Directus headless CMS + Remix.",
+    longDescription:
+      "Youth To Professionals is a non-profit connecting young people with industry mentors. The platform runs its whole operation: structured programs (Mentorship Program, Coaching Program), workshops and courses, events, and the two intake flows that power the mission — become-a-mentor and become-a-mentee request forms with a rigorous matching process behind them.\n\nArchitecture: Directus as headless CMS, React Remix as the application layer. The organization team manages programs, content and media in Directus; the Remix app renders it and owns the interactive flows. Content and application concerns stay cleanly separated — the non-profit staff publish without touching code.\n\nBuilt end to end for the client: CMS modeling, application build and deployment. Live at youthtoprofessionals.org.",
+    role: "Full Stack Developer — CMS modeling, application build, deployment (client project)",
+    clientName: "Youth To Professionals (non-profit)",
+    market: "Youth mentorship community",
+    industry: "EDTECH",
+    projectType: "WEB_APP",
+    startDate: "2025-01-01",
+    endDate: null,
+    isCurrent: true,
+    status: "LIVE",
+    featured: false,
+    sortOrder: 5,
+    liveUrl: "https://www.youthtoprofessionals.org/",
+    tech: ["React", "Node.js", "PostgreSQL"],
+  },
+  {
+    slug: "doyour-events",
+    name: "DoYourEvents",
+    shortDescription:
+      "Event management platform: create events from reusable templates, manage participants, and coordinate service providers.",
+    longDescription:
+      "DoYourEvents lets organizers run events end to end: events and participants managed from reusable event templates, with built-in communication flows to service providers.\n\nBuilt with Node.js & MongoDB on the API and Angular 8 on the front end.",
+    role: "Full Stack Developer",
+    clientName: null,
+    market: "Event organizers",
+    industry: "OTHER",
+    projectType: "WEB_APP",
+    startDate: "2019-05-01",
+    endDate: "2022-03-01",
+    isCurrent: false,
+    status: "ARCHIVED",
+    featured: false,
+    sortOrder: 10,
+    tech: ["Node.js", "MongoDB", "Angular"],
+  },
+  {
+    slug: "kalisteco",
+    name: "Kalisteco",
+    shortDescription:
+      "Employee task management with automatic Gantt-chart generation for planning visibility.",
+    longDescription:
+      "Kalisteco manages employee tasks and generates Gantt charts from them — planning visibility without manual chart maintenance.\n\nBuilt with Node.js & MongoDB on the API and Angular 6 on the front end.",
+    role: "Full Stack Developer",
+    clientName: null,
+    market: "Team leads and planners",
+    industry: "SAAS",
+    projectType: "WEB_APP",
+    startDate: "2019-05-01",
+    endDate: "2022-03-01",
+    isCurrent: false,
+    status: "ARCHIVED",
+    featured: false,
+    sortOrder: 11,
+    tech: ["Node.js", "MongoDB", "Angular"],
+  },
+  {
+    slug: "fabulous",
+    name: "Fabulous",
+    shortDescription:
+      "Cosmetics e-commerce with an integrated training program — storefront, orders and training management on web and mobile.",
+    longDescription:
+      "Fabulous sells cosmetic products online and manages the training program around them — commerce and education in one platform, on web and React Native mobile.\n\nBuilt with Node.js & MySQL on the API, React.js web and React Native mobile.",
+    role: "Full Stack Developer",
+    clientName: null,
+    market: "Cosmetics retail",
+    industry: "ECOMMERCE",
+    projectType: "WEB_APP",
+    startDate: "2019-05-01",
+    endDate: "2022-03-01",
+    isCurrent: false,
+    status: "ARCHIVED",
+    featured: false,
+    sortOrder: 12,
+    tech: ["Node.js", "MySQL", "React", "React Native"],
+  },
+  {
+    slug: "goyoga",
+    name: "GoYoga",
+    shortDescription:
+      "Online yoga teaching platform — classes and content for remote learners.",
+    longDescription:
+      "GoYoga teaches yoga online: a platform for classes and learning content, built with PHP and Vue.js. I participated in the web application development.",
+    role: "Web Developer (participation)",
+    clientName: null,
+    market: "Online learners",
+    industry: "OTHER",
+    projectType: "WEB_APP",
+    startDate: "2019-05-01",
+    endDate: "2022-03-01",
+    isCurrent: false,
+    status: "ARCHIVED",
+    featured: false,
+    sortOrder: 13,
+    tech: ["PHP"],
+  },
 ];
+
+// ensure framework technologies exist (idempotent)
+for (const [name, slug, cat] of [["Angular", "angular", "FRONTEND"], ["Vue.js", "vuejs", "FRONTEND"]]) {
+  await client.query(
+    `INSERT INTO "Technology" (id, name, slug, category) VALUES (md5(random()::text || clock_timestamp()::text), $1, $2, $3::"TechCategory") ON CONFLICT (slug) DO NOTHING`,
+    [name, slug, cat],
+  );
+}
 
 for (const p of projects) {
   await client.query(
