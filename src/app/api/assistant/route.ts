@@ -54,6 +54,8 @@ export async function POST(req: Request) {
     .digest("hex")
     .slice(0, 32);
 
+  const startedAt = Date.now(); // wall-clock for the assistant reply (p50 on /engineering)
+
   // Conversation + visitor hash (D-P1-4: unique per session+mode)
   const conversation = await prisma.conversation.upsert({
     where: { sessionId_mode: { sessionId, mode } },
@@ -109,6 +111,7 @@ export async function POST(req: Request) {
         role: "ASSISTANT",
         content: answer.slice(0, 8000),
         model: process.env.GLM_MODEL ?? "glm-4.5-air",
+        latencyMs: Date.now() - startedAt,
         inputTokens: usage.inputTokens || null,
         outputTokens: usage.outputTokens || null,
       },

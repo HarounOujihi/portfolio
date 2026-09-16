@@ -1,46 +1,166 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Engineering",
-  description: "Technical articles and architecture notes.",
+  description:
+    "How this portfolio is built — live measurements, architecture decision records, and honest trade-offs from a working AI-native site.",
 };
 
+function median(values: number[]): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+}
+
+const DECISIONS: { title: string; choice: string; because: string }[] = [
+  {
+    title: "ADR-1 · Assistant grounding",
+    choice: "Tool-calling over the live database, not RAG",
+    because:
+      "Every answer is assembled from four typed tools querying Postgres per message — facts can never be staler than the admin CMS, and each answer cites its source rows. Vector retrieval (the chunks table is already live with a pgvector column) comes next, for prose depth across case studies.",
+  },
+  {
+    title: "ADR-2 · Vector search",
+    choice: "pgvector + Prisma Unsupported, HNSW guarded in the build",
+    because:
+      "One Postgres, no second vendor. Prisma can't express vector columns, so embedding access is raw SQL — and the known failure mode (migrations silently dropping the HNSW index) is guarded by an assertion script that runs on every deploy and re-creates the index if missing.",
+  },
+  {
+    title: "ADR-3 · Auth",
+    choice: "Better Auth + middleware fast-path + server-side re-check",
+    because:
+      "The edge middleware only redirects — it never authorizes. Every admin query and action re-validates the session (defense in depth, post CVE-2025-29927). Admin allow-list is enforced in the auth callback by email.",
+  },
+  {
+    title: "ADR-4 · Rate limiting",
+    choice: "Two layers: per-IP and per-session",
+    because:
+      "Session IDs are client-supplied, so limiting sessions alone is rotation-friendly. The public assistant applies both an IP-level limiter (anti-rotation) and a session-level limiter (anti-runaway) before any model call.",
+  },
+  {
+    title: "ADR-5 · Privacy",
+    choice: "Salted SHA-256 visitor hashes — raw IPs are never stored",
+    because:
+      "Analytics and assistant sessions hash (salt + sessionId) into opaque 32-hex IDs. The salt lives in server env only, so stored identifiers can't be reversed from the database.",
+  },
+  {
+    title: "ADR-6 · Model routing",
+    choice: "Task-sized GLM models with deterministic fallbacks",
+    because:
+      "The job-match analyzer runs glm-4.5-air (fast, non-thinking) for structured reports, the chat assistant uses the flagship model with tool-calling, and every structured call has a plain JSON-text fallback path — cost scales with task weight, not with hype.",
+  },
+];
+
 export default async function EngineeringPage() {
-  const articles = await prisma.article.findMany({
-    where: { published: true },
-    orderBy: { publishedAt: "desc" },
-  });
+  const [articles, answers, conversations, publishedProjects, latencies] = await Promise.all([
+    prisma.article.findMany({ where: { published: true }, orderBy: { publishedAt: "desc" } }),
+    prisma.message.count({ where: { role: "ASSISTANT" } }),
+    prisma.conversation.count(),
+    prisma.project.count({ where: { published: true } }),
+    prisma.message.findMany({
+      where: { role: "ASSISTANT", latencyMs: { not: null } },
+      select: { latencyMs: true },
+      orderBy: { createdAt: "desc" },
+      take: 500,
+    }),
+  ]);
+
+  const p50 = median(latencies.map((m) => m.latencyMs as number));
+
+  const metrics = [
+    { value: answers, label: "assistant answers served" },
+    { value: p50 === null ? "—" : `${p50}ms`, label: "median answer latency (last 500)" },
+    { value: conversations, label: "conversations" },
+    { value: `${publishedProjects} + ${articles.length}`, label: "published projects + articles" },
+  ];
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
       <h1 className="text-h2 font-bold tracking-tight">Engineering</h1>
       <p className="mt-2 text-lead text-neutral-400">
-        Technical articles and architecture notes from real systems.
+        How this site is built — measured, not claimed. Every number below is read live from the
+        running deployment; every decision is one actually made.
       </p>
 
+      {/* live metrics */}
+      <section aria-label="Live metrics" className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {metrics.map((m) => (
+          <div key={m.label} className="rounded-(--radius-card) border border-white/15 p-4">
+            <p className="text-2xl font-bold tracking-tight">{m.value}</p>
+            <p className="mt-1 text-xs leading-snug text-neutral-400">{m.label}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* decision records */}
+      <h2 className="mt-14 text-xl font-bold tracking-tight">Decision records</h2>
+      <p className="mt-2 text-sm text-neutral-400">
+        The trade-offs behind this deployment — including what I deliberately did not build yet.
+      </p>
+      <ul className="mt-6 space-y-3">
+        {DECISIONS.map((d) => (
+          <li key={d.title} className="rounded-(--radius-card) border border-white/15 p-5">
+            <p className="text-xs font-medium uppercase tracking-wider text-[var(--brand)]">{d.title}</p>
+            <h3 className="mt-1.5 font-semibold">{d.choice}</h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-neutral-400">{d.because}</p>
+          </li>
+        ))}
+      </ul>
+
+      {/* writing */}
+      <h2 className="mt-14 text-xl font-bold tracking-tight">Writing</h2>
+      <p className="mt-2 text-sm text-neutral-400">Deep dives from real systems.</p>
       {articles.length === 0 ? (
-        <div className="mt-12 rounded-(--radius-organic) border border-dashed border-white/20 p-10 text-center">
+        <div className="mt-6 rounded-(--radius-organic) border border-dashed border-white/20 p-10 text-center">
           <p className="font-medium">First articles are in drafting.</p>
           <p className="mt-2 text-sm text-neutral-400">
             Multi-tenant ERP data modeling and multi-model LLM routing are on the way.
           </p>
         </div>
       ) : (
-        <ul className="mt-10 space-y-4">
+        <ul className="mt-6 space-y-3">
           {articles.map((article) => (
-            <li key={article.id} className="rounded-(--radius-card) border border-white/15 p-6">
-              <h2 className="text-lg font-semibold">
+            <li key={article.id} className="rounded-(--radius-card) border border-white/15 p-5 transition-colors hover:border-white/30">
+              <h3 className="font-semibold">
                 <a href={`/articles/${article.slug}`} className="hover:underline">
                   {article.title}
                 </a>
-              </h2>
-              <p className="mt-2 text-sm text-neutral-400">{article.excerpt}</p>
+              </h3>
+              <p className="mt-1.5 text-sm text-neutral-400">{article.excerpt}</p>
+              <p className="mt-2 text-xs text-neutral-400">
+                {article.publishedAt
+                  ? article.publishedAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+                  : "Draft"}{" "}
+                · {Math.max(2, Math.round(article.content.split(/\s+/).length / 200))} min read
+              </p>
             </li>
           ))}
         </ul>
       )}
+
+      {/* roadmap */}
+      <h2 className="mt-14 text-xl font-bold tracking-tight">On the roadmap</h2>
+      <ul className="mt-6 space-y-3 text-sm text-neutral-300">
+        <li className="rounded-(--radius-card) border border-white/15 p-5">
+          <p className="font-semibold text-neutral-100">RAG over case-study depth</p>
+          <p className="mt-1.5 text-neutral-400">
+            The <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">KnowledgeChunk</code> table
+            with a 1024-dim pgvector column is already live. Next: chunk + embed every case study so the
+            assistant quotes full architecture prose, not just structured rows.
+          </p>
+        </li>
+        <li className="rounded-(--radius-card) border border-white/15 p-5">
+          <p className="font-semibold text-neutral-100">Public eval runner</p>
+          <p className="mt-1.5 text-neutral-400">
+            A fixture suite of grounded questions with expected behaviors, model-graded on change. The
+            goal: every prompt change ships with its pass rate, in the open.
+          </p>
+        </li>
+      </ul>
     </main>
   );
 }
-export const dynamic = "force-dynamic";
