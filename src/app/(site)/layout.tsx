@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -7,12 +8,18 @@ import { AssistantFab } from "@/components/assistant/assistant-fab";
 
 /** Public site chrome — header/footer wrap every (site) route. */
 export default async function SiteLayout({ children }: { children: ReactNode }) {
-  const profile = await prisma.profile.findUnique({ where: { id: "profile" }, select: { cvUrl: true, assistantEnabled: true } });
+  const [profile, cookieStore] = await Promise.all([
+    prisma.profile.findUnique({ where: { id: "profile" }, select: { cvUrl: true, assistantEnabled: true } }),
+    cookies(),
+  ]);
   const cvUrl = profile?.cvUrl ?? "/haroun-oujihi-cv.pdf";
+  // Fast presence check only — real authorization happens server-side in /admin.
+  const admin =
+    cookieStore.has("better-auth.session_token") || cookieStore.has("__Secure-better-auth.session_token");
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
-      <SiteHeader cvUrl={cvUrl} />
+      <SiteHeader cvUrl={cvUrl} admin={admin} />
       <SiteTracker />
       {(profile?.assistantEnabled ?? true) && <AssistantFab />}
       <div className="flex-1">{children}</div>

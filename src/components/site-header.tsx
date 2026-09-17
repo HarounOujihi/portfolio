@@ -21,7 +21,7 @@ function isActive(pathname: string, href: string) {
 }
 
 /** Client header — active states via usePathname; CV URL comes from the DB. */
-export function SiteHeader({ cvUrl }: { cvUrl: string }) {
+export function SiteHeader({ cvUrl, admin }: { cvUrl: string; admin?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -62,6 +62,17 @@ export function SiteHeader({ cvUrl }: { cvUrl: string }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          {admin && (
+            <Link
+              href="/admin"
+              className="hidden h-11 items-center gap-2 rounded-full border border-white/20 px-5 text-sm text-neutral-200 transition-colors hover:border-[var(--brand)] hover:text-neutral-100 sm:flex"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" />
+              </svg>
+              Admin
+            </Link>
+          )}
           <TrackedLink
             href={cvUrl}
             eventType="CV_DOWNLOAD"
@@ -72,7 +83,7 @@ export function SiteHeader({ cvUrl }: { cvUrl: string }) {
             Download CV
           </TrackedLink>
 
-          <SiteMobileMenu cvUrl={cvUrl} pathname={pathname} />
+          <SiteMobileMenu cvUrl={cvUrl} pathname={pathname} admin={admin} />
         </div>
       </div>
     </header>
@@ -82,9 +93,11 @@ export function SiteHeader({ cvUrl }: { cvUrl: string }) {
 function SiteMobileMenu({
   cvUrl,
   pathname,
+  admin,
 }: {
   cvUrl: string;
   pathname: string;
+  admin?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -120,6 +133,18 @@ function SiteMobileMenu({
           })}
         </nav>
         <div className="mt-8 flex flex-col gap-3 pb-6">
+          {admin && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="flex h-12 items-center justify-center gap-2 rounded-full border border-white/20 font-medium text-neutral-100"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" />
+              </svg>
+              Administration
+            </Link>
+          )}
           <TrackedLink
             href={cvUrl}
             eventType="CV_DOWNLOAD"
