@@ -31,7 +31,7 @@ export function CountUp({ value, suffix = "", duration = 1.2 }: { value: number;
 export function MetricStat({ value, suffix = "", label }: { value: number; suffix?: string; label: string }) {
   return (
     <div className="rounded-(--radius-card) border border-white/15 p-4">
-      <p className="text-2xl font-bold tracking-tight">
+      <p className="min-h-8 text-2xl font-bold tracking-tight tabular-nums">
         <CountUp value={value} suffix={suffix} />
       </p>
       <p className="mt-1 text-xs leading-snug text-neutral-400">{label}</p>
