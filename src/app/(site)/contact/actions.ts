@@ -18,7 +18,16 @@ export interface ContactState {
   ok?: boolean;
   error?: string;
   fieldErrors?: Record<string, string>;
+  values?: { name: string; email: string; subject: string; message: string };
 }
+
+const FRIENDLY: Record<string, string> = {
+  name: "Please enter your name (at least 2 characters).",
+  email: "Please enter a valid email address.",
+  subject: "Subject is a bit long — 150 characters max.",
+  message: "Your message is a little short — at least 10 characters, so I can answer properly.",
+  website: "Something went wrong.",
+};
 
 export async function submitContact(
   _prev: ContactState,
@@ -41,16 +50,29 @@ export async function submitContact(
     const fieldErrors: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
       const key = String(issue.path[0] ?? "form");
-      if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+      if (!fieldErrors[key]) fieldErrors[key] = FRIENDLY[key] ?? "Please check this field.";
     }
-    return { error: "Please fix the highlighted fields.", fieldErrors };
+    const values = {
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      subject: String(formData.get("subject") ?? ""),
+      message: String(formData.get("message") ?? ""),
+    };
+    return { error: "Please fix the highlighted fields.", fieldErrors, values };
   }
 
   const ip = getClientIp(await headers());
   const limit = await limiters.contact.limit(ip);
   if (!limit.success) {
+    const values = {
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      subject: String(formData.get("subject") ?? ""),
+      message: String(formData.get("message") ?? ""),
+    };
     return {
       error: `Too many messages — please wait ${Math.ceil(limit.retryAfterSeconds / 60)} minute(s).`,
+      values,
     };
   }
 

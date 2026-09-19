@@ -20,15 +20,24 @@ function Badge({ count }: { count: number }) {
   );
 }
 
-function useAdminSession() {
-  const [state, setState] = useState<{ admin: boolean; unread: number }>({ admin: false, unread: 0 });
+export interface AdminSessionCounts {
+  admin: boolean;
+  unread: number;
+  conversations: number;
+  messages: number;
+}
+
+function useAdminSession(): AdminSessionCounts {
+  const [state, setState] = useState<AdminSessionCounts>({ admin: false, unread: 0, conversations: 0, messages: 0 });
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/admin/session", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (!cancelled && d?.admin) setState({ admin: true, unread: d.unread ?? 0 });
+        if (!cancelled && d?.admin) {
+          setState({ admin: true, unread: d.unread ?? 0, conversations: d.conversations ?? 0, messages: d.messages ?? 0 });
+        }
       })
       .catch(() => {});
     return () => {

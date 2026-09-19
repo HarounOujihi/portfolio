@@ -34,7 +34,13 @@ const GROUPS: { label: string; items: { href: string; label: string; exact?: boo
   },
 ];
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+function NavLinks({
+  onNavigate,
+  badges,
+}: {
+  onNavigate?: () => void;
+  badges?: Record<string, number>;
+}) {
   const pathname = usePathname();
   return (
     <>
@@ -44,6 +50,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           <div className="mt-2 flex flex-col">
             {group.items.map((item) => {
               const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+              const badge = badges?.[item.href] ?? 0;
               return (
                 <Link
                   key={item.href}
@@ -54,7 +61,12 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                     active ? "bg-white font-semibold text-neutral-950" : "text-neutral-400 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  {item.label}
+                  <span className="flex-1">{item.label}</span>
+                  {badge > 0 && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--brand)] px-1.5 text-[11px] font-bold leading-none text-neutral-950">
+                      {badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -81,7 +93,15 @@ function SidebarFooter({ email }: { email: string }) {
 }
 
 /** Admin shell — persistent left sidebar on desktop, toggleable drawer on mobile. */
-export function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
+export function AdminShell({
+  email,
+  children,
+  badges,
+}: {
+  email: string;
+  children: React.ReactNode;
+  badges?: Record<string, number>;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -115,7 +135,7 @@ export function AdminShell({ email, children }: { email: string; children: React
             <SheetContent side="left" className="w-full overflow-y-auto px-5 pt-[env(safe-area-inset-top)] pb-6 sm:max-w-xs">
               <SheetTitle className="text-base font-bold">Admin menu</SheetTitle>
               <nav aria-label="Admin mobile" className="mt-4">
-                <NavLinks onNavigate={() => setOpen(false)} />
+                <NavLinks badges={badges} onNavigate={() => setOpen(false)} />
               </nav>
               <SidebarFooter email={email} />
             </SheetContent>

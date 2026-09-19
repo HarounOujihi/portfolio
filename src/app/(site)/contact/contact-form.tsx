@@ -38,14 +38,14 @@ export function ContactForm() {
           <label htmlFor="name" className="mb-1.5 block text-sm font-medium">
             Name <span aria-hidden="true">*</span>
           </label>
-          <input id="name" name="name" required maxLength={100} className={inputClass} autoComplete="name" />
+          <input id="name" name="name" required minLength={2} maxLength={100} defaultValue={state.values?.name ?? ""} className={inputClass} autoComplete="name" />
           {state.fieldErrors?.name && <p className="mt-1 text-sm text-red-600">{state.fieldErrors.name}</p>}
         </div>
         <div>
           <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
             Email <span aria-hidden="true">*</span>
           </label>
-          <input id="email" name="email" type="email" required maxLength={200} className={inputClass} autoComplete="email" />
+          <input id="email" name="email" type="email" required maxLength={200} defaultValue={state.values?.email ?? ""} className={inputClass} autoComplete="email" />
           {state.fieldErrors?.email && <p className="mt-1 text-sm text-red-600">{state.fieldErrors.email}</p>}
         </div>
       </div>
@@ -54,14 +54,14 @@ export function ContactForm() {
         <label htmlFor="subject" className="mb-1.5 block text-sm font-medium">
           Subject
         </label>
-        <input id="subject" name="subject" maxLength={150} className={inputClass} />
+        <input id="subject" name="subject" maxLength={150} defaultValue={state.values?.subject ?? ""} className={inputClass} />
       </div>
 
       <div>
         <label htmlFor="message" className="mb-1.5 block text-sm font-medium">
           Message <span aria-hidden="true">*</span>
         </label>
-        <textarea id="message" name="message" required rows={6} maxLength={5000} className="w-full rounded-(--radius-card) border border-white/20 p-4 text-base outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--color-brand-soft)]" />
+        <textarea id="message" name="message" required minLength={10} rows={6} maxLength={5000} defaultValue={state.values?.message ?? ""} className="w-full rounded-(--radius-card) border border-white/20 p-4 text-base outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--color-brand-soft)]" />
         {state.fieldErrors?.message && (
           <p className="mt-1 text-sm text-red-600">{state.fieldErrors.message}</p>
         )}

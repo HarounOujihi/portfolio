@@ -17,13 +17,21 @@ export async function GET() {
     return Response.json({ admin: false, unread: 0 }, { headers: { "cache-control": "no-store" } });
   }
 
-  const unread = await prisma.$queryRaw<{ count: bigint }[]>`
-    SELECT COUNT(*)::int AS count FROM "Conversation"
-    WHERE "adminReadAt" IS NULL OR "lastMessageAt" > "adminReadAt"
-  `;
+  const [conv, msgs] = await Promise.all([
+    prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(*)::int AS count FROM "Conversation"
+      WHERE "adminReadAt" IS NULL OR "lastMessageAt" > "adminReadAt"
+    `,
+    prisma.contactMessage.count({ where: { status: "NEW" } }),
+  ]);
 
   return Response.json(
-    { admin: true, unread: Number(unread[0]?.count ?? 0) },
+    {
+      admin: true,
+      unread: Number(conv[0]?.count ?? 0) + msgs,
+      conversations: Number(conv[0]?.count ?? 0),
+      messages: msgs,
+    },
     { headers: { "cache-control": "no-store" } },
   );
 }

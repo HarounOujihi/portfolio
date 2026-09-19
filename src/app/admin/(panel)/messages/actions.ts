@@ -14,3 +14,9 @@ export async function setMessageStatus(formData: FormData): Promise<void> {
   await prisma.contactMessage.update({ where: { id }, data: { status: status as never } });
   revalidatePath("/admin/messages");
 }
+
+export async function markAllMessagesRead(): Promise<void> {
+  await requireAdmin();
+  await prisma.contactMessage.updateMany({ where: { status: "NEW" }, data: { status: "READ" } });
+  revalidatePath("/admin/messages");
+}
