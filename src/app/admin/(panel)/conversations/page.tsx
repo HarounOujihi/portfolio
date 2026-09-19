@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/require-admin";
+import { markAllConversationsRead } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -13,13 +14,40 @@ export default async function AdminConversationsPage() {
     },
   });
 
+  const unreadIds = new Set(
+    (
+      await prisma.$queryRaw<{ id: string }[]>`
+        SELECT id FROM "Conversation"
+        WHERE "adminReadAt" IS NULL OR "lastMessageAt" > "adminReadAt"
+      `
+    ).map((r) => r.id),
+  );
+  const unreadCount = unreadIds.size;
+
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">Conversations</h1>
-      <p className="mt-2 text-sm text-neutral-400">
-        What visitors asked the assistant — the product signal. Anonymous (session-scoped), auto-purged
-        after 180 days.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Conversations</h1>
+          <p className="mt-2 text-sm text-neutral-400">
+            What visitors asked the assistant — the product signal. Anonymous (session-scoped), auto-purged
+            after 180 days.
+          </p>
+        </div>
+        {unreadCount > 0 && (
+          <form action={markAllConversationsRead}>
+            <button
+              type="submit"
+              className="flex h-11 items-center gap-2 rounded-full bg-[var(--brand)] px-5 text-sm font-semibold text-neutral-950 transition-opacity hover:opacity-90"
+            >
+              Mark all read
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-neutral-950 px-1.5 text-[11px] font-bold text-neutral-100">
+                {unreadCount}
+              </span>
+            </button>
+          </form>
+        )}
+      </div>
 
       <div className="mt-8 space-y-4">
         {conversations.length === 0 && <p className="text-sm text-neutral-400">No conversations yet.</p>}
@@ -29,6 +57,9 @@ export default async function AdminConversationsPage() {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="truncate font-semibold">
+                    {unreadIds.has(c.id) && (
+                      <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[var(--brand)] align-middle" aria-label="unread" />
+                    )}
                     {c.mode.toLowerCase()} chat{" "}
                     <span className="font-normal text-neutral-400">
                       · {c.messages.length} messages · {(c.visitorHash ?? "—").slice(0, 10)}

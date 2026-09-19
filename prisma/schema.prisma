@@ -499,6 +499,7 @@ model Conversation {
   visitorHash   String?
   startedAt     DateTime         @default(now())
   lastMessageAt DateTime         @default(now())
+  adminReadAt   DateTime?
   metadata      Json?
 
   messages     Message[]

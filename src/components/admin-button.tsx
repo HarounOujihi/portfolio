@@ -11,21 +11,24 @@ function ShieldIcon() {
   );
 }
 
-/**
- * Administration shortcut — renders only when a valid admin session exists.
- * Probes /api/admin/session on mount; visitors get nothing (not even the button).
- * Desktop: compact pill in the header actions. Mobile: hidden (the desktop pill
- * still works once the header switches at md:; menu integration skipped for simplicity).
- */
-export function AdminButton() {
-  const [admin, setAdmin] = useState(false);
+function Badge({ count }: { count: number }) {
+  if (count <= 0) return null;
+  return (
+    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--brand)] px-1.5 text-[11px] font-bold leading-none text-neutral-950">
+      {count}
+    </span>
+  );
+}
+
+function useAdminSession() {
+  const [state, setState] = useState<{ admin: boolean; unread: number }>({ admin: false, unread: 0 });
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/admin/session", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (!cancelled && d?.admin) setAdmin(true);
+        if (!cancelled && d?.admin) setState({ admin: true, unread: d.unread ?? 0 });
       })
       .catch(() => {});
     return () => {
@@ -33,45 +36,39 @@ export function AdminButton() {
     };
   }, []);
 
+  return state;
+}
+
+/** Administration shortcut — desktop header pill (with unread badge). */
+export function AdminButton() {
+  const { admin, unread } = useAdminSession();
   if (!admin) return null;
 
   return (
     <Link
-      href="/admin"
+      href="/admin/conversations"
       className="hidden h-11 items-center gap-2 rounded-full border border-white/20 px-5 text-sm text-neutral-200 transition-colors hover:border-[var(--brand)] hover:text-neutral-100 sm:flex"
     >
       <ShieldIcon />
       Admin
+      <Badge count={unread} />
     </Link>
   );
 }
 
-/** Mobile-menu variant — full-width row inside the sheet. */
+/** Administration shortcut — mobile menu row (with unread badge). */
 export function AdminMenuButton() {
-  const [admin, setAdmin] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/admin/session", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!cancelled && d?.admin) setAdmin(true);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+  const { admin, unread } = useAdminSession();
   if (!admin) return null;
 
   return (
     <Link
-      href="/admin"
+      href="/admin/conversations"
       className="flex h-12 items-center justify-center gap-2 rounded-full border border-white/20 font-medium text-neutral-100"
     >
       <ShieldIcon />
       Administration
+      <Badge count={unread} />
     </Link>
   );
 }
