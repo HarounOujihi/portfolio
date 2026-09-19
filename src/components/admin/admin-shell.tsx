@@ -112,7 +112,7 @@ export function AdminShell({
           Portfolio <span className="text-neutral-400">admin</span>
         </p>
         <nav aria-label="Admin" className="mt-6 flex-1 overflow-y-auto">
-          <NavLinks />
+          <NavLinks badges={badges} />
         </nav>
         <SidebarFooter email={email} />
       </aside>
